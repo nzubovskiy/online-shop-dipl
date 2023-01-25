@@ -1,6 +1,8 @@
 package com.example.onlineshopdipl.controller;
 
 import com.example.onlineshopdipl.dto.*;
+import com.example.onlineshopdipl.entity.Ads;
+import com.example.onlineshopdipl.entity.Comment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
