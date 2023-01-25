@@ -1,4 +1,4 @@
-package com.example.onlineshopdipl.controller;
+package com.example.onlineshopdipl.filter;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
