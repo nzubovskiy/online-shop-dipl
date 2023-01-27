@@ -2,7 +2,7 @@ package com.example.onlineshopdipl.controller;
 
 
 import com.example.onlineshopdipl.dto.NewPassword;
-import com.example.onlineshopdipl.dto.User;
+import com.example.onlineshopdipl.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,7 +56,6 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
-
     )
     @GetMapping("/me")
     public ResponseEntity<User> getUser_1() {

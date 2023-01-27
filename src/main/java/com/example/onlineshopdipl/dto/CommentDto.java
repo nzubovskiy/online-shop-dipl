@@ -3,7 +3,7 @@ package com.example.onlineshopdipl.dto;
 import lombok.Data;
 
 @Data
-public class Comment {
+public class CommentDto {
     private Integer author;
     private String createdAt;
     private Integer pk;

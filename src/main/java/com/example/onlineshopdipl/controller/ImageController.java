@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -38,7 +36,7 @@ public class ImageController {
             produces = { "application/octet-stream" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<List<byte[]>> updateImage(
+    public ResponseEntity<byte[]> updateImage(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image)
     {
