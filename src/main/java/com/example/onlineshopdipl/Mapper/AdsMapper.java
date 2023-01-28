@@ -1,14 +1,14 @@
 package com.example.onlineshopdipl.Mapper;
 
+import com.example.onlineshopdipl.dto.AdsDto;
+import com.example.onlineshopdipl.entity.Ads;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface AdsMapper {
-
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+AdsDto toDTO(Ads ads);
+Ads toEntity(AdsDto adsDto);
 
 }

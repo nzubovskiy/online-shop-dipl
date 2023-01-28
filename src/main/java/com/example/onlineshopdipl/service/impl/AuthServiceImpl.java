@@ -22,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
         this.encoder = new BCryptPasswordEncoder();
     }
 
+
     @Override
     public boolean login(String userName, String password) {
         if (!manager.userExists(userName)) {

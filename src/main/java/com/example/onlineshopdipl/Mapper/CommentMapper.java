@@ -1,12 +1,13 @@
 package com.example.onlineshopdipl.Mapper;
 
+import com.example.onlineshopdipl.dto.CommentDto;
+import com.example.onlineshopdipl.entity.Comment;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CommentMapper {
-
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    CommentDto toDTO(Comment comment);
+    Comment toEntity(CommentDto commentDto);
 }

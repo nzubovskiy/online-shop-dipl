@@ -56,6 +56,7 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
+
     )
     @GetMapping("/me")
     public ResponseEntity<User> getUser_1() {

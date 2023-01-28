@@ -2,6 +2,8 @@ package com.example.onlineshopdipl.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class UserDto {
     private String email;
@@ -9,7 +11,7 @@ public class UserDto {
     private Integer id;
     private String lastName;
     private String phone;
-    private String regDate;
+    private LocalDateTime regDate;
     private String city;
     private String image;
 }

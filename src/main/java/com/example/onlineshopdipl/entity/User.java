@@ -4,6 +4,7 @@ import com.example.onlineshopdipl.dto.Role;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
@@ -17,7 +18,7 @@ public class User {
     private Integer id;
     private String lastName;
     private String phone;
-    private String regDate;
+    private LocalDateTime regDate;
     private String city;
     private String mediaType;
     private byte[] image;
@@ -44,7 +45,7 @@ public class User {
         this.role = Role.USER;
     }
 
-    public User(String email, String firstName, String lastName, String phone, String regDate, String city, String mediaType, byte[] image) {
+    public User(String email, String firstName, String lastName, String phone, LocalDateTime regDate, String city, String mediaType, byte[] image) {
         this.email = email;
         this.firstName = firstName;
         this.id = 0;
@@ -97,11 +98,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getRegDate() {
+    public LocalDateTime getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(String regDate) {
+    public void setRegDate(LocalDateTime regDate) {
         this.regDate = regDate;
     }
 
