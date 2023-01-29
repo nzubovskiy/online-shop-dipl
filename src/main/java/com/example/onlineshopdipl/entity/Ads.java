@@ -11,6 +11,7 @@ public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
+    @Column(name = "mediaType")
     private String mediaType;
     private byte[] image;
     private Integer price;
@@ -18,23 +19,20 @@ public class Ads {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User users;
 
 
 
-    public Ads() {
-        this.pk = 0;
-        this.mediaType = null;
-        this.image = null;
-        this.price = null;
-        this.title = null;
-    }
 
-    public Ads(Integer author, String mediaType, byte[] image, Integer price, String title) {
+    public Ads(User id, String mediaType, byte[] image, Integer price, String title) {
         this.mediaType = mediaType;
         this.image = image;
         this.price = price;
         this.title = title;
+    }
+
+    public Ads() {
+
     }
 
     public Integer getPk() {
