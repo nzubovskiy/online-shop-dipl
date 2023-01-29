@@ -32,18 +32,6 @@ public class User {
 
 
 
-    public User() {
-        this.email = null;
-        this.firstName = null;
-        this.id = 0;
-        this.lastName = null;
-        this.phone = null;
-        this.regDate = null;
-        this.city = null;
-        this.mediaType = null;
-        this.image = null;
-        this.role = Role.USER;
-    }
 
     public User(String email, String firstName, String lastName, String phone, LocalDateTime regDate, String city, String mediaType, byte[] image) {
         this.email = email;
@@ -56,6 +44,10 @@ public class User {
         this.mediaType = mediaType;
         this.image = image;
         this.role = Role.USER;
+    }
+
+    public User() {
+
     }
 
     public String getEmail() {

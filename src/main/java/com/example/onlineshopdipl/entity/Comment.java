@@ -14,20 +14,18 @@ public class Comment {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User users;
 
-    public Comment() {
-        this.author = 0;
-        this.createdAt = null;
-        this.pk = 0;
-        this.text = null;
-    }
 
-    public Comment(Integer author, String createdAt, String text) {
-        this.author = author;
+
+    public Comment(User id, String createdAt, String text) {
         this.createdAt = createdAt;
         this.text = text;
+    }
+
+    public Comment() {
+
     }
 
     public Integer getAuthor() {
