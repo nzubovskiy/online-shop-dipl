@@ -21,7 +21,6 @@ public class AdsService {
     private final UserService userService;
     private final CreateAdsMapper createAdsMapper;
     private final AdsMapper adsMapper;
-
     private final FullAdsMapper fullAdsMapper;
 
     public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper) {
@@ -43,10 +42,6 @@ public class AdsService {
         User user = userService.getUserByLogin(userLogin);
         Ads ads = createAdsMapper.toEntity(createAds, user, createAds.getTitle());
         return adsMapper.toDTO(adsRepository.save(ads));
-    }
-
-    public Ads findByPk(Integer pk) {
-        return adsRepository.findByPk(pk).get();
     }
 
     public FullAds getAds(Integer id) {
@@ -74,7 +69,7 @@ public class AdsService {
                 .orElse(null);
     }
 
-    public ResponseWrapperAds getMyAds(String userLogin) {
+    public ResponseWrapperAds getMyAds(Boolean authenticated, String userLogin) {
         List<Ads> myAds = adsRepository.findByUserLogin(userLogin);
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
         wrapperAds.setCount(myAds.size());

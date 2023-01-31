@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,11 +70,11 @@ public class UserController {
     public ResponseEntity<UserDto> getUser_1(
             @RequestParam(value = "authenticated", required = false) Boolean authenticated,
             @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-            @RequestParam(required = false) Object credentials,
+            @RequestParam(required = false) String userLogin, Object credentials,
             Object details,
             Object principal
     ) {
-        UserDto user = userService.getMe(authenticated);
+        UserDto user = userService.getMe(authenticated, userLogin);
         return ResponseEntity.ok(user);
     }
 

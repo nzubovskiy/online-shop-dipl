@@ -61,9 +61,10 @@ public class AdsController {
             }
     )
     @PostMapping()
-    public ResponseEntity<Ads> addAds(
+    public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
             @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image) {
+       // нет реализации MultipathFile
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -223,7 +224,7 @@ public class AdsController {
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentUpdate
     ) {
         CommentDto commentDto = commentService.findByAdsPkAndPk(adPk, id);
-        commentService.updateComments(commentUpdateDto, adPk, id);
+        commentService.updateComments(commentDto, adPk, id);
         return ResponseEntity.ok(commentUpdate);
     }
 
@@ -251,11 +252,11 @@ public class AdsController {
     public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(
             @RequestParam(value = "authenticated", required = false) Boolean authenticated,
             @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-            @RequestParam(required = false) Object credentials,
+            @RequestParam(required = false) String userLogin, Object credentials,
             Object details,
             Object principal
     ) {
-        ResponseWrapperAds wrapperAds = adsService.getMyAds(authenticated);
+        ResponseWrapperAds wrapperAds = adsService.getMyAds(authenticated, userLogin);
         return ResponseEntity.ok(wrapperAds);
     }
 

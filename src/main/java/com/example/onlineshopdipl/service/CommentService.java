@@ -57,7 +57,7 @@ public class CommentService {
     }
 
     ///
-    public updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk) {
+    public CommentDto updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk) {
         Comment comment = commentRepository.findByAdsPkAndPk(adPk, pk);
         Comment commentUpdate = Mappers.getMapper(CommentMapper.class).toEntity(commentUpdateDto);
         comment.setCreatedAt(commentUpdate.getCreatedAt());

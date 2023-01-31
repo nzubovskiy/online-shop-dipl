@@ -1,7 +1,5 @@
 package com.example.onlineshopdipl.entity;
 
-import com.example.onlineshopdipl.dto.Role;
-
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Objects;
@@ -21,19 +19,16 @@ public class Ads {
     @JoinColumn(name = "author_id")
     private User id;
 
-    public Ads() {
-        this.pk = 0;
-        this.mediaType = null;
-        this.image = null;
-        this.price = null;
-        this.title = null;
-    }
 
-    public Ads(Integer author, String mediaType, byte[] image, Integer price, String title) {
+    public Ads(User id, String mediaType, byte[] image, Integer price, String title) {
         this.mediaType = mediaType;
         this.image = image;
         this.price = price;
         this.title = title;
+    }
+
+    public Ads() {
+
     }
 
     public Integer getPk() {
