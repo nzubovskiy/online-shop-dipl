@@ -11,16 +11,15 @@ public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
+    @Column(name = "mediaType")
     private String mediaType;
     private byte[] image;
     private Integer price;
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-
+    @JoinColumn(name = "author_id")
+    private User id;
 
     public Ads() {
         this.pk = 0;

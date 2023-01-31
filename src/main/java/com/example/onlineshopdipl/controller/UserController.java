@@ -2,7 +2,9 @@ package com.example.onlineshopdipl.controller;
 
 
 import com.example.onlineshopdipl.dto.NewPassword;
+import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(
             tags = "Пользователи",
@@ -41,8 +49,9 @@ public class UserController {
             }
     )
     @PostMapping("/set_password")
-    public ResponseEntity<NewPassword> setPassword() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserDto> setPassword(NewPassword newPassword) {
+        UserDto user = userService.changePassword(newPassword);
+        return ResponseEntity.ok(user);
     }
 
     @Operation(
@@ -59,8 +68,15 @@ public class UserController {
 
     )
     @GetMapping("/me")
-    public ResponseEntity<User> getUser_1() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserDto> getUser_1(
+            @RequestParam(value = "authenticated", required = false) Boolean authenticated,
+            @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
+            @RequestParam(required = false) Object credentials,
+            Object details,
+            Object principal
+    ) {
+        UserDto user = userService.getMe(authenticated);
+        return ResponseEntity.ok(user);
     }
 
     @Operation(
@@ -71,7 +87,7 @@ public class UserController {
                     required = true,
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = User.class))
+                            schema = @Schema(implementation = UserDto.class))
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
@@ -83,8 +99,9 @@ public class UserController {
             }
     )
     @PatchMapping("/me")
-    public ResponseEntity<User> reupdateUser() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUser(UserDto user) {
+        user = userService.editUser(user);
+        return ResponseEntity.ok(user);
     }
 
     @Operation(
@@ -104,8 +121,9 @@ public class UserController {
             produces = { "*/*" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<User> updateUserImage(
+    public ResponseEntity<String> updateUserImage(
             @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        String filePath = "";
+        return ResponseEntity.ok(String.format("{\"data\":{ \"image\": \"%s\"}}", filePath));
     }
 }

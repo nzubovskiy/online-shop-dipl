@@ -1,7 +1,6 @@
 package com.example.onlineshopdipl.entity;
 
 import com.example.onlineshopdipl.dto.Role;
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,16 +22,18 @@ public class User {
     private String mediaType;
     private byte[] image;
     private Role role;
+    private String password;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "id")
     private Set<Comment> comments;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "id")
     private Set<Ads> ads;
 
 
 
     public User() {
+        this.password = password;
         this.email = null;
         this.firstName = null;
         this.id = 0;
@@ -45,9 +46,10 @@ public class User {
         this.role = Role.USER;
     }
 
-    public User(String email, String firstName, String lastName, String phone, LocalDateTime regDate, String city, String mediaType, byte[] image) {
+    public User(String email, String firstName, String lastName, String phone, LocalDateTime regDate, String city, String mediaType, byte[] image, String password) {
         this.email = email;
         this.firstName = firstName;
+        this.password = password;
         this.id = 0;
         this.lastName = lastName;
         this.phone = phone;
@@ -138,17 +140,25 @@ public class User {
         this.role = role;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return email.equals(user.email) && Objects.equals(firstName, user.firstName) && id.equals(user.id) && Objects.equals(lastName, user.lastName) && Objects.equals(phone, user.phone) && regDate.equals(user.regDate) && Objects.equals(city, user.city) && Objects.equals(mediaType, user.mediaType) && Arrays.equals(image, user.image) && role == user.role;
+        return email.equals(user.email) && Objects.equals(firstName, user.firstName) && id.equals(user.id) && Objects.equals(lastName, user.lastName) && Objects.equals(phone, user.phone) && regDate.equals(user.regDate) && Objects.equals(city, user.city) && Objects.equals(mediaType, user.mediaType) && Arrays.equals(image, user.image) && role == user.role && password == user.password;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(email, firstName, id, lastName, phone, regDate, city, mediaType, role);
+        int result = Objects.hash(email, firstName, id, lastName, phone, regDate, city, mediaType, role, password);
         result = 31 * result + Arrays.hashCode(image);
         return result;
     }
