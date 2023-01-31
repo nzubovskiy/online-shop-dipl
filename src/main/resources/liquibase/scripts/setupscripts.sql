@@ -25,7 +25,7 @@ CREATE TABLE ads(
 
 CREATE TABLE comments(
   pk serial primary key,
-  createdAt text,
+  createdAt datetime,
   text text,
   user_id serial references users (id)
   );

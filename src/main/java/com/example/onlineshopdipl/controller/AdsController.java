@@ -3,6 +3,8 @@ package com.example.onlineshopdipl.controller;
 import com.example.onlineshopdipl.dto.*;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
+import com.example.onlineshopdipl.service.AdsService;
+import com.example.onlineshopdipl.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,11 +19,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+import static java.awt.SystemColor.text;
+
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads")
 public class AdsController {
+    private final AdsService adsService;
+    private final CommentService commentService;
+
+    public AdsController(AdsService adsService, CommentService commentService) {
+        this.adsService = adsService;
+        this.commentService = commentService;
+    }
+
 
     @Operation(
             tags = "Объявления",
@@ -31,7 +45,7 @@ public class AdsController {
     )
     @GetMapping()
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(adsService.getAllAds());
     }
 
     @Operation(
@@ -47,9 +61,10 @@ public class AdsController {
             }
     )
     @PostMapping()
-    public ResponseEntity<Ads> addAds(
+    public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
             @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image) {
+       // нет реализации MultipathFile
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -64,10 +79,11 @@ public class AdsController {
             }
     )
     @GetMapping("/{ad_pk}/comments")
-    public ResponseEntity<ResponseWrapperComment> getComments(
-            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") String adPk
+    public List<CommentDto> getComments(
+            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<CommentDto> commentDtoList = commentService.getAllCommentsByAd(adPk);
+        return commentDtoList;
     }
 
     @Operation(tags = "Объявления",
@@ -82,10 +98,10 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
     @PostMapping(value = "/{ad_pk}/comments")
-    public ResponseEntity<Comment> addComments(
+    public CommentDto addComments(
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") String adPk
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new CommentDto();
     }
 
     @Operation(
@@ -101,10 +117,11 @@ public class AdsController {
     )
 
     @GetMapping("/{id}")
-    public ResponseEntity<FullAds> getAds(
+    public FullAds getAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        FullAds fullAds = adsService.getAds(id);
+        return fullAds;
     }
 
     @Operation(
@@ -118,10 +135,10 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeAds(
+    public void removeAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        adsService.deleteAds(id);
     }
 
     @Operation(
@@ -139,11 +156,12 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id})")
-    public ResponseEntity<Ads> updateAds(
+    public AdsDto updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        AdsDto adsDto = adsService.updateAds(id, ads);
+        return adsDto;
     }
 
     @Operation(
@@ -158,11 +176,12 @@ public class AdsController {
             }
     )
     @GetMapping("/{ad_pk}/comments/{id}")
-    public ResponseEntity<Comment> getComments_1(
+    public CommentDto getComments_1(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") String adPk,
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        CommentDto commentDto = new CommentDto();
+        return commentDto;
     }
 
     @Operation(
@@ -178,10 +197,11 @@ public class AdsController {
     )
     @DeleteMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
-            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") String adPk,
+            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        commentService.deleteComment(adPk, id);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(
@@ -199,11 +219,13 @@ public class AdsController {
             }
     )
     @PatchMapping("/{ad_pk}/comments/{id}")
-    public ResponseEntity<Comment> updateComments(
-            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") String adPk,
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody Comment comment
+    public ResponseEntity<CommentDto> updateComments(
+            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
+            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentUpdate
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        CommentDto commentDto = commentService.findByAdsPkAndPk(adPk, id);
+        commentService.updateComments(commentDto, adPk, id);
+        return ResponseEntity.ok(commentUpdate);
     }
 
     @Operation(
@@ -230,11 +252,12 @@ public class AdsController {
     public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(
             @RequestParam(value = "authenticated", required = false) Boolean authenticated,
             @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-            @RequestParam(required = false) Object credentials,
+            @RequestParam(required = false) String userLogin, Object credentials,
             Object details,
             Object principal
     ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        ResponseWrapperAds wrapperAds = adsService.getMyAds(authenticated, userLogin);
+        return ResponseEntity.ok(wrapperAds);
     }
 
 }

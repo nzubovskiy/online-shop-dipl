@@ -1,7 +1,5 @@
 package com.example.onlineshopdipl.entity;
 
-import com.example.onlineshopdipl.dto.Role;
-
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,10 +16,8 @@ public class Ads {
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User users;
-
-
+    @JoinColumn(name = "author_id")
+    private User id;
 
 
     public Ads(User id, String mediaType, byte[] image, Integer price, String title) {
