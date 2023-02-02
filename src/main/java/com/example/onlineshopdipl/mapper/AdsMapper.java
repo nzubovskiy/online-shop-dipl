@@ -13,11 +13,11 @@ import java.util.List;
 @Component
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface AdsMapper {
-    //@Mapping(source = "pk", target = "pk")
+    @Mapping(source = "pk", target = "pk")
     Ads toEntity(AdsDto adsDto);
 
-    //@Mapping(source = "pk", target = "pk")
-   // @Mapping(source = "user.id", target = "author")
+    @Mapping(source = "pk", target = "pk")
+    @Mapping(source = "user.id", target = "author")
     AdsDto toDTO(Ads ads);
 
     List<AdsDto> toAdsDtoList(List<Ads> adsList);
