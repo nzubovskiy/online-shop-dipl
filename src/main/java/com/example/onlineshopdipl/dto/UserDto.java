@@ -14,4 +14,10 @@ public class UserDto {
     private LocalDateTime regDate;
     private String city;
     private String image;
+    private String login;
+    private String password;
+
+    public String getEmail() {
+        return email;
+    }
 }

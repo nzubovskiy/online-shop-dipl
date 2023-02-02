@@ -16,7 +16,7 @@ public class UserService {
 
     public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
+        this.userMapper=userMapper;
     }
 
     public UserDto editUser(UserDto user) {

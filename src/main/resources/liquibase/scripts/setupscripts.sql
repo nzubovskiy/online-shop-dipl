@@ -4,19 +4,21 @@
 CREATE TABLE users(
     id serial primary key,
     email text,
-    firstName text,
-    lastName text,
+    first_name text,
+    last_name text,
     phone text,
-    regDate timestamp,
+    reg_date timestamp,
     city text,
-    mediaType text,
+    media_type text,
     image bytea,
-    role text
+    role text,
+    login text,
+    password text
     );
 
 CREATE TABLE ads(
    pk serial primary key,
-   mediaType text,
+   media_type text,
    image bytea,
    price integer,
    title text,
@@ -25,7 +27,7 @@ CREATE TABLE ads(
 
 CREATE TABLE comments(
   pk serial primary key,
-  createdAt datetime,
+  created_at timestamp,
   text text,
   user_id serial references users (id)
   );

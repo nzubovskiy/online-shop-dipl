@@ -129,7 +129,7 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version></version>
+                            <version>1.5.3.Final</version>
                         </path>
                         <!-- other annotation processors -->
                     </annotationProcessorPaths>

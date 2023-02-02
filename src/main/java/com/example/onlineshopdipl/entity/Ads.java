@@ -1,5 +1,7 @@
 package com.example.onlineshopdipl.entity;
 
+import com.example.onlineshopdipl.dto.Role;
+
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Objects;
@@ -9,15 +11,18 @@ public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
-    @Column(name = "mediaType")
+    @Column(name = "media_type")
     private String mediaType;
     private byte[] image;
     private Integer price;
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User id;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+
 
 
     public Ads(User id, String mediaType, byte[] image, Integer price, String title) {

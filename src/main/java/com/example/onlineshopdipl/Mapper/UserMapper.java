@@ -9,15 +9,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-
 @Component
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper {
+
     UserDto toDTO(User user);
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "login", ignore = true)
     User toUser(UserDto userDto);
 }

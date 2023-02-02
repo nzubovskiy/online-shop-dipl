@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity(name = "comments")
 public class Comment {
-
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,8 +15,8 @@ public class Comment {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User id;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
 
@@ -58,19 +58,18 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return id.equals(comment.id) && createdAt.equals(comment.createdAt) && pk.equals(comment.pk) && text.equals(comment.text);
+        return createdAt.equals(comment.createdAt) && pk.equals(comment.pk) && text.equals(comment.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, pk, text);
+        return Objects.hash(createdAt, pk, text);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Comment {\n");
-        sb.append("    author: ").append(toIndentedString(id)).append("\n");
         sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
         sb.append("    pk: ").append(toIndentedString(pk)).append("\n");
         sb.append("    text: ").append(toIndentedString(text)).append("\n");
