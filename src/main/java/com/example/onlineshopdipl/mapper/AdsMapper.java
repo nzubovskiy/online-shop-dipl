@@ -20,5 +20,4 @@ public interface AdsMapper {
     List<AdsDto> toAdsDtoList(List<Ads> adsList);
 
     List<Ads> toAdsEntityList(List<AdsDto> adsDtoList);
-
 }
