@@ -14,9 +14,5 @@ import org.springframework.stereotype.Component;
 public interface UserMapper {
 
     UserDto toDTO(User user);
-
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "role", ignore = true)
-    @Mapping(target = "login", ignore = true)
     User toUser(UserDto userDto);
 }

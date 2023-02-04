@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NewPasswordMapper {
-    @Mapping(source = "user.password", target = "currentPassword")
     NewPassword toDto(User user);
-    @Mapping(source = "newPassword", target = "user.password")
     NewPassword toEntity(NewPassword newPassword);
 }

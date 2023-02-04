@@ -9,4 +9,12 @@ import java.util.List;
 public class ResponseWrapperAds {
     private Integer count;
     private List<AdsDto> results;
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public void setResults(List<AdsDto> results) {
+        this.results = results;
+    }
 }

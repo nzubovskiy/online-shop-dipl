@@ -10,4 +10,8 @@ public class NewPassword {
     public String getNewPassword() {
         return newPassword;
     }
+
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
 }
