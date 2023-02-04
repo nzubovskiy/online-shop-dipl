@@ -38,7 +38,7 @@ public class CommentService {
 
     public List<CommentDto> getAllCommentsByAd(Integer adPk) {
         List<CommentDto> commentsDto = new ArrayList<>();
-        List<Comment> allComents = commentRepository.findAllById(adPk);
+        List<Comment> allComents = commentRepository.findAllByPk(adPk);
         for (Comment comment : allComents) {
             commentsDto.add(Mappers.getMapper(CommentMapper.class).toDTO(comment));
         }
@@ -46,19 +46,19 @@ public class CommentService {
     }
 
     public void deleteComment(Integer adPk, Integer pk) {
-        Comment comment = commentRepository.findByAdsPkAndPk(adPk, pk);
+        Comment comment = commentRepository.findByPkAndPk(adPk, pk);
         commentRepository.delete(comment);
     }
 
     public CommentDto findByAdsPkAndPk(Integer adPk, Integer pk) {
-        Comment comment = commentRepository.findByAdsPkAndPk(adPk, pk);
+        Comment comment = commentRepository.findByPkAndPk(adPk, pk);
         CommentDto commentDto = Mappers.getMapper(CommentMapper.class).toDTO(comment);
         return commentDto;
     }
 
     ///
     public CommentDto updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk) {
-        Comment comment = commentRepository.findByAdsPkAndPk(adPk, pk);
+        Comment comment = commentRepository.findByPkAndPk(adPk, pk);
         Comment commentUpdate = Mappers.getMapper(CommentMapper.class).toEntity(commentUpdateDto);
         comment.setCreatedAt(commentUpdate.getCreatedAt());
         comment.setPk(pk);
