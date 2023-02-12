@@ -6,12 +6,4 @@ import lombok.Data;
 public class NewPassword {
     private String currentPassword;
     private String newPassword;
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public String getCurrentPassword() {
-        return currentPassword;
-    }
 }

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,9 +49,12 @@ public class UserController {
             }
     )
     @PostMapping("/set_password")
-    public ResponseEntity<UserDto> setPassword(NewPassword newPassword) {
-        UserDto user = userService.changePassword(newPassword);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
+        UserDto userDto = userService.changePassword(newPassword, authentication.getName());
+        if (userDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userDto);
     }
 
     @Operation(
@@ -67,15 +71,9 @@ public class UserController {
 
     )
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser_1(
-            @RequestParam(value = "authenticated", required = false) Boolean authenticated,
-            @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-            @RequestParam(required = false) String userLogin, Object credentials,
-            Object details,
-            Object principal
-    ) {
-        UserDto user = userService.getMe(authenticated, userLogin);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUser_1(Authentication authentication){
+        UserDto userDto = userService.getMe(authentication.getName());
+        return ResponseEntity.ok(userDto);
     }
 
     @Operation(
@@ -98,8 +96,8 @@ public class UserController {
             }
     )
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(UserDto user) {
-        user = userService.editUser(user);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
+        UserDto user = userService.editUser(userDto, authentication.getName());
         return ResponseEntity.ok(user);
     }
 
@@ -116,7 +114,7 @@ public class UserController {
     )
     @RequestMapping(
             method = RequestMethod.PATCH,
-            value = "/users/me/image",
+            value = "/me/image",
             produces = { "*/*" },
             consumes = { "multipart/form-data" }
     )

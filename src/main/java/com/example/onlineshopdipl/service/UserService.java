@@ -19,8 +19,12 @@ public class UserService {
         this.userMapper=userMapper;
     }
 
-    public UserDto editUser(UserDto user) {
-        Optional<User> optionalUser = Optional.of(getUserByLogin(user.getEmail()));
+    public UserDto findUser(Integer id) {
+        return userMapper.toDTO(userRepository.findById(id).get());
+    }
+
+    public UserDto editUser(UserDto user, String userLogin) {
+        Optional<User> optionalUser = Optional.of(getUserByLogin(userLogin));
 
         optionalUser.ifPresent(userEntity -> {
             userEntity.setFirstName(user.getFirstName());
@@ -34,14 +38,17 @@ public class UserService {
                 .orElse(null);
     }
 
-    public UserDto getMe(Boolean authenticated, String userLogin) {
+    public UserDto getMe(String userLogin) {
         return userMapper.toDTO(getUserByLogin(userLogin));
     }
 
-    public UserDto changePassword(NewPassword newPassword) {
+    public UserDto changePassword(NewPassword newPassword, String userLogin) {
         User user = userRepository.getUserByPassword(newPassword.getCurrentPassword());
         user.setPassword((newPassword.getNewPassword()));
-        return userMapper.toDTO(user);
+        if (user != null) {
+            return userMapper.toDTO(user);
+        }
+        return null;
     }
 
     public User getUserByLogin(String userLogin) {

@@ -2,7 +2,6 @@ package com.example.onlineshopdipl.service;
 
 import com.example.onlineshopdipl.dto.AdsDto;
 import com.example.onlineshopdipl.dto.CreateAds;
-import com.example.onlineshopdipl.dto.FullAds;
 import com.example.onlineshopdipl.dto.ResponseWrapperAds;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.User;
@@ -12,6 +11,8 @@ import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,45 +23,52 @@ public class AdsService {
     private final CreateAdsMapper createAdsMapper;
     private final AdsMapper adsMapper;
     private final FullAdsMapper fullAdsMapper;
+    private final FileService fileService;
 
-    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper) {
+    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, FileService fileService) {
         this.adsRepository = adsRepository;
         this.userService = userService;
         this.createAdsMapper = createAdsMapper;
         this.adsMapper = adsMapper;
         this.fullAdsMapper = fullAdsMapper;
+        this.fileService = fileService;
     }
 
     public ResponseWrapperAds getAllAds() {
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
         List<Ads> adsList = adsRepository.findAll();
-        wrapperAds.setResults(adsMapper.toAdsDtoList(adsList));
-        wrapperAds.setCount(adsList.size());
+        if (!adsList.isEmpty()) {
+            wrapperAds.setResults(adsMapper.toAdsDtoList(adsList));
+            wrapperAds.setCount(adsList.size());
+        }
+        else wrapperAds.setResults(Collections.emptyList());
         return wrapperAds;
     }
-    public AdsDto createAds(String userLogin, CreateAds createAds) {
+    public AdsDto createAds(String userLogin, CreateAds createAds, String image) {
         User user = userService.getUserByLogin(userLogin);
+        boolean exist = adsRepository.findByTitleAndUserId(createAds.getTitle(), user.getId());
+        if (exist) {
+            return null;
+        }
         Ads ads = createAdsMapper.toEntity(createAds, user, createAds.getTitle());
         return adsMapper.toDTO(adsRepository.save(ads));
     }
 
-    public FullAds getAds(Integer id) {
-        Optional<Ads> optionalAds = adsRepository.findByPk(id);
-
-        return optionalAds
-                .map(fullAdsMapper::toDto)
-                .orElse(null);
+    public Ads getAds(Integer pk) {
+        return adsRepository.findByPk(pk);
     }
 
-    public void deleteAds(Integer id) {
-        adsRepository.deleteById(id);
+    public void deleteAds(Integer pk) {
+        adsRepository.deleteById(pk);
     }
 
-    public AdsDto updateAds(Integer id, CreateAds ads) {
-        Optional<Ads> optionalAds = adsRepository.findByPk(id);
+    public AdsDto updateAds(String userLogin, Integer pk, CreateAds ads) {
+        User user = userService.getUserByLogin(userLogin);
+        Optional<Ads> optionalAds = adsRepository.findByPkAndUserId(pk, user.getId());
         optionalAds.ifPresent(adsEntity ->{
             adsEntity.setTitle(ads.getTitle());
             adsEntity.setPrice(ads.getPrice());
+            adsEntity.setDescription(ads.getDescription());
 
             adsRepository.save(adsEntity);
         });
@@ -69,11 +77,31 @@ public class AdsService {
                 .orElse(null);
     }
 
-    public ResponseWrapperAds getMyAds(Boolean authenticated, String userLogin) {
+    public ResponseWrapperAds getMyAds(String userLogin) {
         List<Ads> myAds = adsRepository.findByUserLogin(userLogin);
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
-        wrapperAds.setCount(myAds.size());
-        wrapperAds.setResults(adsMapper.toAdsDtoList(myAds));
+        if (!myAds.isEmpty()) {
+            wrapperAds.setCount(myAds.size());
+            wrapperAds.setResults(adsMapper.toAdsDtoList(myAds));
+        } else wrapperAds.setResults(Collections.emptyList());
         return wrapperAds;
+    }
+
+    public List<Ads> getAdsLike(String title) {
+        return adsRepository.searchByTitle(title);
+    }
+
+    public boolean updateAdsImage(Integer pk, String userLogin, String filePath) {
+        Optional<Ads> optionalAds = adsRepository.findByPkAndUserLogin(pk, userLogin);
+
+        Ads adsEntity = optionalAds.orElseThrow(EntityNotFoundException::new);
+        String image = adsEntity.getImage();
+
+        if (!image.isEmpty()) {
+            fileService.removeFile(image);
+        }
+        adsEntity.setImage(filePath);
+        adsRepository.save(adsEntity);
+        return true;
     }
 }
