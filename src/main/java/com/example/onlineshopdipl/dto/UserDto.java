@@ -14,22 +14,4 @@ public class UserDto {
     private LocalDateTime regDate;
     private String city;
     private String image;
-    private String login;
-    private String password;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
 }

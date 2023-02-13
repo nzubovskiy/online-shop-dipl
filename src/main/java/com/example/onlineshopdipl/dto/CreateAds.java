@@ -10,14 +10,5 @@ public class CreateAds {
     private String description;
     private Integer price;
     private String title;
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-
+    private String image;
 }

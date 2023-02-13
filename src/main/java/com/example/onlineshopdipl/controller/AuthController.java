@@ -34,12 +34,6 @@ public class AuthController {
             tags = "Авторизация",
             summary = "login",
             operationId = "login",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = LoginReq.class))
-            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(
@@ -83,5 +77,9 @@ public class AuthController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 }
