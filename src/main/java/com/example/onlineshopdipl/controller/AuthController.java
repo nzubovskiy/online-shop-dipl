@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,11 +26,10 @@ import static com.example.onlineshopdipl.dto.Role.USER;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class AuthController {
 
     private AuthService authService;
-
-
     @Operation(
             tags = "Авторизация",
             summary = "login",
