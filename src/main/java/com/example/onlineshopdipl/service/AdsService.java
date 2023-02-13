@@ -9,6 +9,7 @@ import com.example.onlineshopdipl.mapper.AdsMapper;
 import com.example.onlineshopdipl.mapper.CreateAdsMapper;
 import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -44,8 +45,8 @@ public class AdsService {
         else wrapperAds.setResults(Collections.emptyList());
         return wrapperAds;
     }
-    public AdsDto createAds(String userLogin, CreateAds createAds, String image) {
-        User user = userService.getUserByLogin(userLogin);
+    public AdsDto createAds(Authentication authentication, CreateAds createAds, String image) {
+        User user = userService.getUserByLogin(authentication.getName());
         boolean exist = adsRepository.findByTitleAndUserId(createAds.getTitle(), user.getId());
         if (exist) {
             return null;
@@ -58,23 +59,33 @@ public class AdsService {
         return adsRepository.findByPk(pk);
     }
 
-    public void deleteAds(Integer pk) {
+    public void deleteAds(Integer pk, Authentication authentication) {
+        Ads ads = getAds(pk);
+        checkPermissionAlterAds(authentication, ads);
         adsRepository.deleteById(pk);
     }
 
-    public AdsDto updateAds(String userLogin, Integer pk, CreateAds ads) {
-        User user = userService.getUserByLogin(userLogin);
+    public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
+        User user = userService.getUserByLogin(authentication.getName());
         Optional<Ads> optionalAds = adsRepository.findByPkAndUserId(pk, user.getId());
         optionalAds.ifPresent(adsEntity ->{
             adsEntity.setTitle(ads.getTitle());
             adsEntity.setPrice(ads.getPrice());
             adsEntity.setDescription(ads.getDescription());
-
+            checkPermissionAlterAds(authentication, adsEntity);
             adsRepository.save(adsEntity);
         });
         return optionalAds
                 .map(adsMapper::toDTO)
                 .orElse(null);
+    }
+
+    private void checkPermissionAlterAds(Authentication authentication,Ads ads) {
+        boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
+
+        if (!userIsAdmin) {
+            throw new RuntimeException("403 Forbidden");
+        }
     }
 
     public ResponseWrapperAds getMyAds(String userLogin) {

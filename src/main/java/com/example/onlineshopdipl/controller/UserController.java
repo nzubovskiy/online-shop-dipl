@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
+@PreAuthorize("isAuthentificated()")
 @RequestMapping("/users")
 public class UserController {
 
@@ -71,9 +73,9 @@ public class UserController {
 
     )
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser_1(Authentication authentication){
-        UserDto userDto = userService.getMe(authentication.getName());
-        return ResponseEntity.ok(userDto);
+    public ResponseEntity<User> getUser_1(Authentication authentication){
+        User user = userService.getMe(authentication.getName());
+        return ResponseEntity.ok(user);
     }
 
     @Operation(
@@ -119,8 +121,8 @@ public class UserController {
             consumes = { "multipart/form-data" }
     )
     public ResponseEntity<String> updateUserImage(
-            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image) {
+            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image, Authentication authentication) {
         String filePath = "";
-        return ResponseEntity.ok(String.format("{\"data\":{ \"image\": \"%s\"}}", filePath));
+        return ResponseEntity.ok(String.format("{\"data\":{ \"image\": \"%s\"}}", filePath, authentication.getName()));
     }
 }

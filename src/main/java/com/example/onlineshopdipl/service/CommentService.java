@@ -7,6 +7,7 @@ import com.example.onlineshopdipl.entity.Comment;
 import com.example.onlineshopdipl.mapper.CommentMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.CommentRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -19,11 +20,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final AdsRepository adsRepository;
     private final CommentMapper commentMapper;
+    private final UserService userService;
 
-    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper) {
+
+    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
         this.commentMapper = commentMapper;
+        this.userService = userService;
     }
 
     public CommentDto addComments(CommentDto commentDto, Integer pk) {
@@ -42,33 +46,36 @@ public class CommentService {
     }
 
     public ResponseWrapperComment getAllCommentsByAd(Integer adPk) {
-        List<Comment> allComents = commentRepository.findAllByPk(adPk);
+        List<Comment> allComments = commentRepository.findAllByPk(adPk);
         ResponseWrapperComment wrapperComment = new ResponseWrapperComment();
-        if (allComents.isEmpty()) {
+        if (allComments.isEmpty()) {
             wrapperComment.setResult(Collections.emptyList());
         } else {
-            wrapperComment.setCount(allComents.size());
-            wrapperComment.setResult(commentMapper.toListDto(allComents));
+            wrapperComment.setCount(allComments.size());
+            wrapperComment.setResult(commentMapper.toListDto(allComments));
         }
         return wrapperComment;
     }
 
-    public boolean deleteComment(Integer adPk, Integer pk) {
+    public void deleteComment(Authentication authentication, Integer adPk, Integer pk) {
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
+        commentOptional.ifPresent(comment -> {
+            checkPermissionAlterComment(authentication, comment);
+        });
         commentOptional.ifPresent((commentRepository::delete));
-        return commentOptional.isPresent();
+
     }
 
 
 
-    public CommentDto updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk) {
+    public CommentDto updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk, Authentication authentication) {
         Ads ads = adsRepository.findByPk(adPk);
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
         commentOptional.ifPresent(comment -> {
+            checkPermissionAlterComment(authentication, comment);
             comment.setPk(commentUpdateDto.getPk());
             comment.setCreatedAt(commentUpdateDto.getCreatedAt());
             comment.setText(commentUpdateDto.getText());
-
             commentRepository.save(comment);
         });
         return commentOptional
@@ -81,5 +88,13 @@ public class CommentService {
         return commentOptional
                 .map(commentMapper::toDTO)
                 .orElse(null);
+    }
+
+    private void checkPermissionAlterComment(Authentication authentication, Comment comment) {
+        boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
+
+        if (!userIsAdmin) {
+            throw new RuntimeException("403 Forbidden");
+        }
     }
 }

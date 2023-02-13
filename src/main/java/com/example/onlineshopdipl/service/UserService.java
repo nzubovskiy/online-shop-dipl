@@ -1,10 +1,12 @@
 package com.example.onlineshopdipl.service;
 
 import com.example.onlineshopdipl.dto.NewPassword;
+import com.example.onlineshopdipl.dto.Role;
 import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.mapper.UserMapper;
 import com.example.onlineshopdipl.repository.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -38,8 +40,8 @@ public class UserService {
                 .orElse(null);
     }
 
-    public UserDto getMe(String userLogin) {
-        return userMapper.toDTO(getUserByLogin(userLogin));
+    public User getMe(String userLogin) {
+        return userRepository.findByEmail(userLogin);
     }
 
     public UserDto changePassword(NewPassword newPassword, String userLogin) {
@@ -53,5 +55,10 @@ public class UserService {
 
     public User getUserByLogin(String userLogin) {
         return userRepository.findByEmail(userLogin);
+    }
+
+    public boolean checkUserIsAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().contains(Role.ADMIN.name()));
     }
 }

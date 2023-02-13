@@ -8,6 +8,7 @@ import com.example.onlineshopdipl.repository.CommentRepository;
 import com.example.onlineshopdipl.service.AdsService;
 import com.example.onlineshopdipl.service.CommentService;
 import com.example.onlineshopdipl.service.FileService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,6 +71,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PostMapping()
     public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
@@ -77,7 +79,7 @@ public class AdsController {
             Authentication authentication) throws IOException {
         String imagePath = fileService.saveFile(IMAGE_PATH, image);
 
-        AdsDto adsDto = adsService.createAds(authentication.getName(), properties, imagePath);
+        AdsDto adsDto = adsService.createAds(authentication, properties, imagePath);
 
         return ResponseEntity.ok(adsDto);
     }
@@ -92,6 +94,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments")
     public ResponseWrapperComment getComments(
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
@@ -110,6 +113,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
+    @PreAuthorize("isAuthentificated()")
     @PostMapping(value = "/{ad_pk}/comments")
     public ResponseEntity<CommentDto> addComments(@RequestBody CommentDto commentDto,
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
@@ -129,7 +133,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{id}")
     public Ads getAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
@@ -152,11 +156,11 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @DeleteMapping("/{id}")
-    public void removeAds(
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id
-    ) {
-        adsService.deleteAds(id);
+    public ResponseEntity<Void> removeAds(@PathVariable int id, Authentication authentication) {
+        adsService.deleteAds(id, authentication);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -173,13 +177,14 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PatchMapping("/{id})")
     public AdsDto updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads,
             Authentication authentication)
     {
-        AdsDto adsDto = adsService.updateAds(authentication.getName(), id, ads);
+        AdsDto adsDto = adsService.updateAds(authentication, id, ads);
         return adsDto;
     }
 
@@ -194,6 +199,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> getComments_1(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
@@ -217,12 +223,15 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @DeleteMapping("/{ad_pk}/comments/{id}")
-    public void deleteComments(
+    public ResponseEntity<Void> deleteComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id
+            @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
+            Authentication authentication
     ) {
-        commentService.deleteComment(adPk, id);
+        commentService.deleteComment(authentication, adPk, id);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(
@@ -238,12 +247,14 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> updateComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentDto
+            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentDto,
+            Authentication authentication
     ) {
-        CommentDto comment = commentService.updateComments(commentDto, adPk, id);
+        CommentDto comment = commentService.updateComments(commentDto, adPk, id, authentication);
         return ResponseEntity.ok(comment);
     }
 
@@ -267,6 +278,7 @@ public class AdsController {
                     @Parameter(name = "principal")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(Authentication authentication) {
         ResponseWrapperAds wrapperAds = adsService.getMyAds(authentication.getName());
