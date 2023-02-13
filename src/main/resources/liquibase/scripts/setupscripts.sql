@@ -9,19 +9,18 @@ CREATE TABLE users(
     phone text,
     reg_date timestamp,
     city text,
-    media_type text,
-    image bytea,
+    image text,
     role text,
-    login text,
+    login text ,
     password text
     );
 
 CREATE TABLE ads(
    pk serial primary key,
-   media_type text,
-   image bytea,
+   image text,
    price integer,
    title text,
+   description text,
    user_id serial references users (id)
    );
 
@@ -29,7 +28,8 @@ CREATE TABLE comments(
   pk serial primary key,
   created_at timestamp,
   text text,
-  user_id serial references users (id)
+  user_id serial references users (id),
+  ads_pk serial references ads(pk)
   );
 
 

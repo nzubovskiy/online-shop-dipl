@@ -3,8 +3,13 @@ package com.example.onlineshopdipl.controller;
 import com.example.onlineshopdipl.dto.*;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
+import com.example.onlineshopdipl.exception.ImageNotFoundException;
+import com.example.onlineshopdipl.repository.CommentRepository;
 import com.example.onlineshopdipl.service.AdsService;
 import com.example.onlineshopdipl.service.CommentService;
+import com.example.onlineshopdipl.service.FileService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -18,10 +23,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 
-import static java.awt.SystemColor.text;
+import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -30,10 +36,15 @@ import static java.awt.SystemColor.text;
 public class AdsController {
     private final AdsService adsService;
     private final CommentService commentService;
+    private final FileService fileService;
+    private final CommentRepository commentRepository;
+    private static final String IMAGE_PATH = "/ads";
 
-    public AdsController(AdsService adsService, CommentService commentService) {
+    public AdsController(AdsService adsService, CommentService commentService, FileService fileService, CommentRepository commentRepository) {
         this.adsService = adsService;
         this.commentService = commentService;
+        this.fileService = fileService;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -60,12 +71,17 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PostMapping()
     public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
-            @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image) {
-       // нет реализации MultipathFile
-        return new ResponseEntity<>(HttpStatus.OK);
+            @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image,
+            Authentication authentication) throws IOException {
+        String imagePath = fileService.saveFile(IMAGE_PATH, image);
+
+        AdsDto adsDto = adsService.createAds(authentication, properties, imagePath);
+
+        return ResponseEntity.ok(adsDto);
     }
 
     @Operation(
@@ -78,18 +94,18 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments")
-    public List<CommentDto> getComments(
+    public ResponseWrapperComment getComments(
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
     ) {
-        List<CommentDto> commentDtoList = commentService.getAllCommentsByAd(adPk);
-        return commentDtoList;
+        ResponseWrapperComment wrapperComment = commentService.getAllCommentsByAd(adPk);
+        return wrapperComment;
     }
 
     @Operation(tags = "Объявления",
             summary = "addComments",
             operationId = "addComments",
-            requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Comment.class))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
                     @Content(mediaType = "*/*", schema = @Schema(implementation = Comment.class))),
@@ -97,11 +113,13 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
+    @PreAuthorize("isAuthentificated()")
     @PostMapping(value = "/{ad_pk}/comments")
-    public CommentDto addComments(
-            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") String adPk
+    public ResponseEntity<CommentDto> addComments(@RequestBody CommentDto commentDto,
+            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
     ) {
-        return new CommentDto();
+        CommentDto comment = commentService.addComments(commentDto, adPk);
+        return ResponseEntity.ok(comment);
     }
 
     @Operation(
@@ -115,13 +133,17 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{id}")
-    public FullAds getAds(
+    public Ads getAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        FullAds fullAds = adsService.getAds(id);
-        return fullAds;
+        Ads ads = adsService.getAds(id);
+
+        if (ads == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return ads;
     }
 
     @Operation(
@@ -134,11 +156,11 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @DeleteMapping("/{id}")
-    public void removeAds(
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id
-    ) {
-        adsService.deleteAds(id);
+    public ResponseEntity<Void> removeAds(@PathVariable int id, Authentication authentication) {
+        adsService.deleteAds(id, authentication);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -155,12 +177,14 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PatchMapping("/{id})")
     public AdsDto updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-            @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads
-    ) {
-        AdsDto adsDto = adsService.updateAds(id, ads);
+            @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads,
+            Authentication authentication)
+    {
+        AdsDto adsDto = adsService.updateAds(authentication, id, ads);
         return adsDto;
     }
 
@@ -175,13 +199,17 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments/{id}")
-    public CommentDto getComments_1(
-            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") String adPk,
+    public ResponseEntity<CommentDto> getComments_1(
+            @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        CommentDto commentDto = new CommentDto();
-        return commentDto;
+        CommentDto commentDto = commentService.getComments_1(adPk, id);
+        if (commentDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentDto);
     }
 
     @Operation(
@@ -195,12 +223,14 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @DeleteMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id
+            @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
+            Authentication authentication
     ) {
-        commentService.deleteComment(adPk, id);
+        commentService.deleteComment(authentication, adPk, id);
         return ResponseEntity.ok().build();
     }
 
@@ -208,7 +238,6 @@ public class AdsController {
             tags = "Объявления",
             summary = "updateComments",
             operationId = "updateComments",
-            requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = {
                             @Content(mediaType = "*/*", schema = @Schema(implementation = Comment.class))
@@ -218,14 +247,15 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> updateComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
-            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentUpdate
+            @Parameter(name = "id", required = true) @PathVariable("id") Integer id, @RequestBody CommentDto commentDto,
+            Authentication authentication
     ) {
-        CommentDto commentDto = commentService.findByAdsPkAndPk(adPk, id);
-        commentService.updateComments(commentDto, adPk, id);
-        return ResponseEntity.ok(commentUpdate);
+        CommentDto comment = commentService.updateComments(commentDto, adPk, id, authentication);
+        return ResponseEntity.ok(comment);
     }
 
     @Operation(
@@ -248,16 +278,36 @@ public class AdsController {
                     @Parameter(name = "principal")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(
-            @RequestParam(value = "authenticated", required = false) Boolean authenticated,
-            @RequestParam(value = "authorities[0].authority", required = false) String authorities0Authority,
-            @RequestParam(required = false) String userLogin, Object credentials,
-            Object details,
-            Object principal
-    ) {
-        ResponseWrapperAds wrapperAds = adsService.getMyAds(authenticated, userLogin);
+    public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(Authentication authentication) {
+        ResponseWrapperAds wrapperAds = adsService.getMyAds(authentication.getName());
         return ResponseEntity.ok(wrapperAds);
     }
 
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "updateAdsImage",
+            responses = {
+                    @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "204", content = @Content()),
+                    @ApiResponse(responseCode = "404", content = @Content())
+            }
+    )
+    public String updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+                                 Authentication authentication) throws IOException {
+        String filePath = "";
+        try {
+            filePath = fileService.saveFile(IMAGE_PATH, image);
+
+            boolean isSaved = adsService.updateAdsImage(id, authentication.getName(), filePath);
+            if (!isSaved) {
+                throw new ImageNotFoundException(filePath);
+            }
+            return String.format("{\"data\":{ \"image\": \"%s\"}}", filePath);
+        } catch (EntityNotFoundException | ImageNotFoundException e) {
+            fileService.removeFileByPath(filePath);
+            return "";
+        }
+    }
 }
