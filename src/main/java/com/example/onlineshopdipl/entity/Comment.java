@@ -5,11 +5,10 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "comments")
+@Table(name = "Comments")
 public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;

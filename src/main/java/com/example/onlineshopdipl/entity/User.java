@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 public class User {
     private String email;
     @Column(name = "first_name")

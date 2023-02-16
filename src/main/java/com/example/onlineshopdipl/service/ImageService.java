@@ -42,4 +42,14 @@ public class ImageService {
                 .getImage();
     return new ByteArrayResource(image).getByteArray();
     }
+
+    //Написано просто чтобы не было ошибки - переписать завтра
+    public byte[] updateAdsImage(Integer id, MultipartFile image) {
+        byte[] presentImage = getImage(id);
+        return presentImage;
+    }
+    // переделать
+    public void removeFile(String image) {
+
+    }
 }

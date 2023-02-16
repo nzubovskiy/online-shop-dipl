@@ -3,11 +3,10 @@ package com.example.onlineshopdipl.controller;
 import com.example.onlineshopdipl.dto.*;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
-import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.repository.CommentRepository;
 import com.example.onlineshopdipl.service.AdsService;
 import com.example.onlineshopdipl.service.CommentService;
-import com.example.onlineshopdipl.service.FileService;
+import com.example.onlineshopdipl.service.ImageService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,14 +35,14 @@ import java.io.IOException;
 public class AdsController {
     private final AdsService adsService;
     private final CommentService commentService;
-    private final FileService fileService;
+    private final ImageService imageService;
     private final CommentRepository commentRepository;
     private static final String IMAGE_PATH = "/ads";
 
-    public AdsController(AdsService adsService, CommentService commentService, FileService fileService, CommentRepository commentRepository) {
+    public AdsController(AdsService adsService, CommentService commentService, ImageService imageService, CommentRepository commentRepository) {
         this.adsService = adsService;
         this.commentService = commentService;
-        this.fileService = fileService;
+        this.imageService = imageService;
         this.commentRepository = commentRepository;
     }
 
@@ -77,9 +76,9 @@ public class AdsController {
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
             @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image,
             Authentication authentication) throws IOException {
-        String imagePath = fileService.saveFile(IMAGE_PATH, image);
+        Integer imagePath = imageService.saveImage(image);
 
-        AdsDto adsDto = adsService.createAds(authentication, properties, imagePath);
+        AdsDto adsDto = adsService.createAds(authentication, properties, image);
 
         return ResponseEntity.ok(adsDto);
     }
@@ -94,7 +93,6 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments")
     public ResponseWrapperComment getComments(
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
@@ -133,7 +131,6 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{id}")
     public Ads getAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
@@ -199,7 +196,6 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
     @GetMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> getComments_1(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
@@ -285,6 +281,7 @@ public class AdsController {
         return ResponseEntity.ok(wrapperAds);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "updateAdsImage",
@@ -294,20 +291,10 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", content = @Content())
             }
     )
-    public String updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+    public ResponseEntity<byte[]> updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
                                  Authentication authentication) throws IOException {
-        String filePath = "";
-        try {
-            filePath = fileService.saveFile(IMAGE_PATH, image);
 
-            boolean isSaved = adsService.updateAdsImage(id, authentication.getName(), filePath);
-            if (!isSaved) {
-                throw new ImageNotFoundException(filePath);
-            }
-            return String.format("{\"data\":{ \"image\": \"%s\"}}", filePath);
-        } catch (EntityNotFoundException | ImageNotFoundException e) {
-            fileService.removeFileByPath(filePath);
-            return "";
-        }
+        byte[] imageBytes = imageService.updateAdsImage(id, image);
+        return ResponseEntity.ok(imageBytes);
     }
 }
