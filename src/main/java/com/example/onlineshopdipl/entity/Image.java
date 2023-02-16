@@ -7,23 +7,21 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "image")
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
+@Entity
+@Table(name = "image")
 public class Image {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @GeneratedValue
+    private Integer id;
 
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] image;
 
     @ManyToOne
-    @JoinColumn(name = "ads_id")
+    @JoinColumn(name = "ads_pk")
     private Ads ads;
 
     @Override
@@ -39,15 +37,5 @@ public class Image {
         return getClass().hashCode();
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
 }

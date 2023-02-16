@@ -1,11 +1,13 @@
 package com.example.onlineshopdipl.service;
 
-import com.example.onlineshopdipl.dto.AdsDto;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.ImageRepository;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -22,7 +24,7 @@ public class ImageService {
         this.adsRepository=adsRepository;
     }
 
-    public String saveImage(MultipartFile image){
+    public Integer saveImage(MultipartFile image){
         Image image1= new Image();
         try{
             byte[] bytes= image.getBytes();
@@ -30,13 +32,14 @@ public class ImageService {
         }catch (IOException e){
             throw new RuntimeException(e);
         }
-        image1.setId(UUID.randomUUID().toString());
-        Image savedImage= imageRepository.saveAndFlush(image1);
-        return savedImage.getId();
+        image1.setId(Integer.valueOf(UUID.randomUUID().toString()));
+        return imageRepository.save(image1).getId();
     }
 
-    public byte[] getImage(Integer pk){
-        adsRepository.findByPk(pk);
-        return new byte[0];
+    public byte[] getImage(Integer id){
+        byte[] image= imageRepository.findById(id)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getImage();
+    return new ByteArrayResource(image).getByteArray();
     }
 }

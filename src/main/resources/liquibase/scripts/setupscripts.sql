@@ -32,4 +32,10 @@ CREATE TABLE comments(
   ads_pk serial references ads(pk)
   );
 
+-- changeset elenazmeeva:2
+CREATE TABLE image(
+    id serial primary key,
+    image bytea,
+    ads_pk serial references ads(pk)
+);
 

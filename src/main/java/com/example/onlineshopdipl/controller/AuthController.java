@@ -25,7 +25,7 @@ import static com.example.onlineshopdipl.dto.Role.USER;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
-@NoArgsConstructor
+
 @RequiredArgsConstructor
 public class AuthController {
 

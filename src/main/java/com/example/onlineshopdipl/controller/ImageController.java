@@ -51,8 +51,8 @@ public class ImageController {
     }
 
     @PostMapping("/addImage")
-    public ResponseEntity<String> saveImage(@RequestParam MultipartFile image){
-        return ResponseEntity.ok(imageService.saveImage(image));
+    public Integer saveImage(@RequestParam MultipartFile image){
+        return imageService.saveImage(image);
     }
 
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})

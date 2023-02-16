@@ -3,7 +3,8 @@ package com.example.onlineshopdipl.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.List;
+
 
 @Data
 @Entity
@@ -19,5 +20,9 @@ public class Ads {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "ads")
+    private List<Image> images;
+
 
 }

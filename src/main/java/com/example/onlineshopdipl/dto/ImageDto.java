@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ImageDto {
 
-    private String id;
+    private Integer id;
     private byte[] image;
     private Ads ads;
 }
