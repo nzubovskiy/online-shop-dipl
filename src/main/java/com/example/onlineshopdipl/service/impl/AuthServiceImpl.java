@@ -16,6 +16,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -46,22 +47,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {
-        //com.example.onlineshopdipl.entity.User user= userRepository.findByEmail(registerReq.getUsername());
+        com.example.onlineshopdipl.entity.User user = userRepository.findByEmail(registerReq.getUsername());
         if (manager.userExists(registerReq.getUsername())) {
             return false;
         }
 
-        //com.example.onlineshopdipl.entity.User savedUser = new User();
-        //savedUser.setLogin(registerReq.getUsername());
-        //savedUser.setPassword(registerReq.getPassword());
-        //savedUser.setFirstName(registerReq.getFirstName());
-        //savedUser.setLastName(registerReq.getLastName());
-        // savedUser.setPhone(registerReq.getPhone());
-        //savedUser.setRegDate(LocalDateTime.now());
-        //savedUser.setRole(role);
+        com.example.onlineshopdipl.entity.User savedUser = new User();
+        savedUser.setLogin(registerReq.getUsername());
+        savedUser.setPassword(registerReq.getPassword());
+        savedUser.setFirstName(registerReq.getFirstName());
+        savedUser.setLastName(registerReq.getLastName());
+        savedUser.setPhone(registerReq.getPhone());
+        savedUser.setRegDate(LocalDateTime.now());
+        savedUser.setRole(role);
 
-        // userRepository.save(savedUser);
-
+        userRepository.save(savedUser);
         return true;
     }
 
@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword("{bcrypt}" + encoder.encode(newPassword.getNewPassword()));
             userRepository.save(user);
         } else {
-            throw new UserNoRightsException();
+            throw new UserNoRightsException("Wrong current password");
         }
     }
 }

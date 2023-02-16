@@ -92,8 +92,9 @@ public class CommentService {
 
     private void checkPermissionAlterComment(Authentication authentication, Comment comment) {
         boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
+        boolean userIsMe = userService.checkUserIsMe(authentication);
 
-        if (!userIsAdmin) {
+        if (!userIsAdmin && !userIsMe) {
             throw new RuntimeException("403 Forbidden");
         }
     }

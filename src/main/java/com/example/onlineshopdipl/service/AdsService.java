@@ -11,6 +11,7 @@ import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
@@ -24,15 +25,16 @@ public class AdsService {
     private final CreateAdsMapper createAdsMapper;
     private final AdsMapper adsMapper;
     private final FullAdsMapper fullAdsMapper;
-    private final FileService fileService;
+    private final ImageService imageService;
 
-    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, FileService fileService) {
+    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, ImageService imageService) {
         this.adsRepository = adsRepository;
         this.userService = userService;
         this.createAdsMapper = createAdsMapper;
         this.adsMapper = adsMapper;
         this.fullAdsMapper = fullAdsMapper;
-        this.fileService = fileService;
+        this.imageService = imageService;
+
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -45,7 +47,7 @@ public class AdsService {
         else wrapperAds.setResults(Collections.emptyList());
         return wrapperAds;
     }
-    public AdsDto createAds(Authentication authentication, CreateAds createAds, String image) {
+    public AdsDto createAds(Authentication authentication, CreateAds createAds, MultipartFile image) {
         User user = userService.getUserByLogin(authentication.getName());
         boolean exist = adsRepository.findByTitleAndUserId(createAds.getTitle(), user.getId());
         if (exist) {
@@ -82,8 +84,9 @@ public class AdsService {
 
     private void checkPermissionAlterAds(Authentication authentication,Ads ads) {
         boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
+        boolean userIsMe = userService.checkUserIsMe(authentication);
 
-        if (!userIsAdmin) {
+        if (!userIsAdmin && !userIsMe) {
             throw new RuntimeException("403 Forbidden");
         }
     }
@@ -100,19 +103,5 @@ public class AdsService {
 
     public List<Ads> getAdsLike(String title) {
         return adsRepository.searchByTitle(title);
-    }
-
-    public boolean updateAdsImage(Integer pk, String userLogin, String filePath) {
-        Optional<Ads> optionalAds = adsRepository.findByPkAndUserLogin(pk, userLogin);
-
-        Ads adsEntity = optionalAds.orElseThrow(EntityNotFoundException::new);
-        String image = adsEntity.getImage();
-
-        if (!image.isEmpty()) {
-            fileService.removeFile(image);
-        }
-        adsEntity.setImage(filePath);
-        adsRepository.save(adsEntity);
-        return true;
     }
 }

@@ -61,4 +61,8 @@ public class UserService {
         return authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().contains(Role.ADMIN.name()));
     }
+
+    public boolean checkUserIsMe(Authentication authentication) {
+        return authentication.isAuthenticated();
+    }
 }

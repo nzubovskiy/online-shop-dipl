@@ -4,9 +4,9 @@ package com.example.onlineshopdipl.controller;
 import com.example.onlineshopdipl.dto.NewPassword;
 import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.service.ImageService;
 import com.example.onlineshopdipl.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -19,17 +19,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
-@PreAuthorize("isAuthentificated()")
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final ImageService imageService;
+
+    public UserController(UserService userService, ImageService imageService) {
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @Operation(
@@ -50,6 +54,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PostMapping("/set_password")
     public ResponseEntity<UserDto> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
         UserDto userDto = userService.changePassword(newPassword, authentication.getName());
@@ -72,6 +77,7 @@ public class UserController {
             }
 
     )
+    @PreAuthorize("isAuthentificated()")
     @GetMapping("/me")
     public ResponseEntity<User> getUser_1(Authentication authentication){
         User user = userService.getMe(authentication.getName());
@@ -97,6 +103,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
         UserDto user = userService.editUser(userDto, authentication.getName());
@@ -114,15 +121,17 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("isAuthentificated()")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/me/image",
             produces = { "*/*" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<String> updateUserImage(
-            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image, Authentication authentication) {
-        String filePath = "";
-        return ResponseEntity.ok(String.format("{\"data\":{ \"image\": \"%s\"}}", filePath, authentication.getName()));
+    public ResponseEntity<byte[]> updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+                                                 Authentication authentication) throws IOException {
+
+        byte[] imageBytes = imageService.updateAdsImage(id, image);
+        return ResponseEntity.ok(imageBytes);
     }
 }
