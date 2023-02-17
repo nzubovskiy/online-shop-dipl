@@ -36,6 +36,7 @@ CREATE TABLE comments(
 CREATE TABLE image(
     id serial primary key,
     image bytea,
+    user_id serial references users (id),
     ads_pk serial references ads(pk)
 );
 

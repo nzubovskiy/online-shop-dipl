@@ -47,14 +47,9 @@ public class ImageController {
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image)
     {
+        imageService.saveImage(image);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    @PostMapping("/addImage")
-    public Integer saveImage(@RequestParam MultipartFile image){
-        return imageService.saveImage(image);
-    }
-
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public byte[] getImage(@PathVariable Integer id){
         return imageService.getImage(id);

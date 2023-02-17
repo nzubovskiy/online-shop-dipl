@@ -3,8 +3,10 @@ package com.example.onlineshopdipl.service;
 import com.example.onlineshopdipl.dto.NewPassword;
 import com.example.onlineshopdipl.dto.Role;
 import com.example.onlineshopdipl.dto.UserDto;
+import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.mapper.UserMapper;
+import com.example.onlineshopdipl.repository.ImageRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ImageRepository imageRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper,
+                       ImageRepository imageRepository) {
         this.userRepository = userRepository;
         this.userMapper=userMapper;
+        this.imageRepository = imageRepository;
     }
 
     public UserDto findUser(Integer id) {
@@ -65,4 +70,5 @@ public class UserService {
     public boolean checkUserIsMe(Authentication authentication) {
         return authentication.isAuthenticated();
     }
+
 }

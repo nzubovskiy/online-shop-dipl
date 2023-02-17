@@ -1,5 +1,6 @@
 package com.example.onlineshopdipl.service;
 
+import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.ImageRepository;
@@ -45,6 +46,7 @@ public class ImageService {
 
     //Написано просто чтобы не было ошибки - переписать завтра
     public byte[] updateAdsImage(Integer id, MultipartFile image) {
+
         byte[] presentImage = getImage(id);
         return presentImage;
     }
