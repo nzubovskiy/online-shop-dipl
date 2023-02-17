@@ -5,6 +5,7 @@ import com.example.onlineshopdipl.dto.Role;
 import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.exception.UserNoRightsException;
 import com.example.onlineshopdipl.mapper.UserMapper;
 import com.example.onlineshopdipl.repository.ImageRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
@@ -49,7 +50,7 @@ public class UserService {
         return userRepository.findByEmail(userLogin);
     }
 
-    public UserDto changePassword(NewPassword newPassword, String userLogin) {
+    public UserDto changePassword(NewPassword newPassword, String username) {
         User user = userRepository.getUserByPassword(newPassword.getCurrentPassword());
         user.setPassword((newPassword.getNewPassword()));
         if (user != null) {
@@ -62,13 +63,13 @@ public class UserService {
         return userRepository.findByEmail(userLogin);
     }
 
-    public boolean checkUserIsAdmin(Authentication authentication) {
-        return authentication.getAuthorities().stream()
+    public void checkUserHaveRights(Authentication authentication, String username) {
+        boolean checkUserIsMe = authentication.getName().equals(username);
+        boolean checkUserIsAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().contains(Role.ADMIN.name()));
-    }
-
-    public boolean checkUserIsMe(Authentication authentication) {
-        return authentication.isAuthenticated();
+        if (!(checkUserIsAdmin || checkUserIsMe)) {
+            throw new UserNoRightsException("You have no rights to perform this operation");
+        }
     }
 
 }

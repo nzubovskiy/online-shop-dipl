@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +39,7 @@ public class ImageController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/image/{id}",
@@ -45,7 +48,8 @@ public class ImageController {
     )
     public ResponseEntity<byte[]> updateImage(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image)
+            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image,
+            Authentication authentication)
     {
         imageService.saveImage(image);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -54,5 +58,8 @@ public class ImageController {
     public byte[] getImage(@PathVariable Integer id){
         return imageService.getImage(id);
     }
+        return ResponseEntity.ok(imageService.updateAdsImage(id, image, authentication));
+    }
+
 
 }
