@@ -1,10 +1,12 @@
 package com.example.onlineshopdipl.service;
 
 import com.example.onlineshopdipl.entity.Image;
+import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.ImageRepository;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,9 +21,12 @@ public class ImageService {
 
     private final AdsRepository adsRepository;
 
-    public ImageService(ImageRepository imageRepository, AdsRepository adsRepository) {
+    private final UserService userService;
+
+    public ImageService(ImageRepository imageRepository, AdsRepository adsRepository, UserService userService) {
         this.imageRepository=imageRepository;
         this.adsRepository=adsRepository;
+        this.userService = userService;
     }
 
     public Integer saveImage(MultipartFile image){
@@ -43,13 +48,32 @@ public class ImageService {
     return new ByteArrayResource(image).getByteArray();
     }
 
-    //Написано просто чтобы не было ошибки - переписать завтра
-    public byte[] updateAdsImage(Integer id, MultipartFile image) {
-        byte[] presentImage = getImage(id);
-        return presentImage;
+    public byte[] updateAdsImage(Integer id, MultipartFile image, Authentication authentication)  {
+        Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
+        userService.checkUserHaveRights(authentication, presentImage.getAds().getUser().getUsername());
+        byte[] imageBytes = new byte[0];
+        try {
+            imageBytes = image.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        presentImage.setImage(imageBytes);
+        Image savedImage = imageRepository.save(presentImage);
+        return savedImage.getImage();
     }
-    // переделать
-    public void removeFile(String image) {
 
+    public byte[] updateUserImage(Integer id, MultipartFile image, Authentication authentication)  {
+        Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
+        userService.checkUserHaveRights(authentication, presentImage.getUser().getUsername());
+        byte[] imageBytes = new byte[0];
+        try {
+            imageBytes = image.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        presentImage.setImage(imageBytes);
+        Image savedImage = imageRepository.save(presentImage);
+        return savedImage.getImage();
     }
+
 }

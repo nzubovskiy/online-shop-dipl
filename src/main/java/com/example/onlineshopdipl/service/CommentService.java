@@ -4,6 +4,8 @@ import com.example.onlineshopdipl.dto.CommentDto;
 import com.example.onlineshopdipl.dto.ResponseWrapperComment;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
+import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.exception.UserNoRightsException;
 import com.example.onlineshopdipl.mapper.CommentMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.CommentRepository;
@@ -60,7 +62,7 @@ public class CommentService {
     public void deleteComment(Authentication authentication, Integer adPk, Integer pk) {
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
         commentOptional.ifPresent(comment -> {
-            checkPermissionAlterComment(authentication, comment);
+            userService.checkUserHaveRights(authentication, comment.getUser().getUsername());
         });
         commentOptional.ifPresent((commentRepository::delete));
 
@@ -72,7 +74,7 @@ public class CommentService {
         Ads ads = adsRepository.findByPk(adPk);
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
         commentOptional.ifPresent(comment -> {
-            checkPermissionAlterComment(authentication, comment);
+            userService.checkUserHaveRights(authentication, comment.getUser().getUsername());
             comment.setPk(commentUpdateDto.getPk());
             comment.setCreatedAt(commentUpdateDto.getCreatedAt());
             comment.setText(commentUpdateDto.getText());
@@ -88,14 +90,5 @@ public class CommentService {
         return commentOptional
                 .map(commentMapper::toDTO)
                 .orElse(null);
-    }
-
-    private void checkPermissionAlterComment(Authentication authentication, Comment comment) {
-        boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
-        boolean userIsMe = userService.checkUserIsMe(authentication);
-
-        if (!userIsAdmin && !userIsMe) {
-            throw new RuntimeException("403 Forbidden");
-        }
     }
 }

@@ -1,17 +1,15 @@
 package com.example.onlineshopdipl.controller;
 
-import com.example.onlineshopdipl.dto.AdsDto;
 import com.example.onlineshopdipl.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +35,7 @@ public class ImageController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/image/{id}",
@@ -45,19 +44,11 @@ public class ImageController {
     )
     public ResponseEntity<byte[]> updateImage(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image)
+            @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image,
+            Authentication authentication)
     {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(imageService.updateAdsImage(id, image, authentication));
     }
 
-    @PostMapping("/addImage")
-    public Integer saveImage(@RequestParam MultipartFile image){
-        return imageService.saveImage(image);
-    }
-
-    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
-    public byte[] getImage(@PathVariable Integer id){
-        return imageService.getImage(id);
-    }
 
 }

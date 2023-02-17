@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 
 @Slf4j
@@ -294,7 +293,7 @@ public class AdsController {
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
                                  Authentication authentication) throws IOException {
 
-        byte[] imageBytes = imageService.updateAdsImage(id, image);
+        byte[] imageBytes = imageService.updateAdsImage(id, image, authentication);
         return ResponseEntity.ok(imageBytes);
     }
 }
