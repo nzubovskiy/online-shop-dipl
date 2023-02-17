@@ -28,7 +28,7 @@ import static com.example.onlineshopdipl.dto.Role.USER;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
     @Operation(
             tags = "Авторизация",
             summary = "login",
@@ -77,4 +77,5 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
 }

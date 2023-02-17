@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ public class AdsService {
     }
 
     public ResponseWrapperAds getMyAds(String userLogin) {
-        List<Ads> myAds = adsRepository.findByUserLogin(userLogin);
+        List<Ads> myAds = adsRepository.findByUserUsername(userLogin);
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
         if (!myAds.isEmpty()) {
             wrapperAds.setCount(myAds.size());

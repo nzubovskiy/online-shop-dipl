@@ -54,7 +54,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/set_password")
     public ResponseEntity<UserDto> setPassword(@RequestBody NewPassword newPassword, Authentication authentication) {
         UserDto userDto = userService.changePassword(newPassword, authentication.getName());
@@ -77,7 +77,7 @@ public class UserController {
             }
 
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<User> getUser_1(Authentication authentication){
         User user = userService.getMe(authentication.getName());
@@ -103,7 +103,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
         UserDto user = userService.editUser(userDto, authentication.getName());
@@ -121,7 +121,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/me/image",

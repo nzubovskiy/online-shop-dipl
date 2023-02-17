@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         com.example.onlineshopdipl.entity.User savedUser = new User();
-        savedUser.setLogin(registerReq.getUsername());
+        savedUser.setUsername(registerReq.getUsername());
         savedUser.setPassword(registerReq.getPassword());
         savedUser.setFirstName(registerReq.getFirstName());
         savedUser.setLastName(registerReq.getLastName());
