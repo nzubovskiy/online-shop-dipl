@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
     Ads findByPk(Integer pk);
 
-    List<Ads> findByUserLogin(String userLogin);
+    List<Ads> findByUserUsername(String userLogin);//поменяла login на username
 
     boolean findByTitleAndUserId(String title, Integer id);
 
@@ -22,5 +22,6 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
     @Query("select a from Ads a where a.title like %:title%")
     List<Ads> searchByTitle(@Param("title") String title);
 
-    Optional<Ads> findByPkAndUserLogin(Integer pk, String userLogin);
+    Optional<Ads> findByPkAndUserUsername(Integer pk, String userLogin);//поменяла login на username
+
 }

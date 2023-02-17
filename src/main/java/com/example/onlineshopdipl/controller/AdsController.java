@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 
 @Slf4j
@@ -70,7 +69,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
@@ -111,7 +110,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             })
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PostMapping(value = "/{ad_pk}/comments")
     public ResponseEntity<CommentDto> addComments(@RequestBody CommentDto commentDto,
             @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
@@ -153,7 +152,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "403", description = "Forbidden")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAds(@PathVariable int id, Authentication authentication) {
         adsService.deleteAds(id, authentication);
@@ -174,7 +173,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PatchMapping("/{id})")
     public AdsDto updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
@@ -219,7 +218,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @DeleteMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<Void> deleteComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
@@ -243,7 +242,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> updateComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,
@@ -274,14 +273,14 @@ public class AdsController {
                     @Parameter(name = "principal")
             }
     )
-    @PreAuthorize("isAuthentificated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAds> getAdsMeUsingGET(Authentication authentication) {
         ResponseWrapperAds wrapperAds = adsService.getMyAds(authentication.getName());
         return ResponseEntity.ok(wrapperAds);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "updateAdsImage",
@@ -294,7 +293,7 @@ public class AdsController {
     public ResponseEntity<byte[]> updateAdsImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
                                  Authentication authentication) throws IOException {
 
-        byte[] imageBytes = imageService.updateAdsImage(id, image);
+        byte[] imageBytes = imageService.updateAdsImage(id, image, authentication);
         return ResponseEntity.ok(imageBytes);
     }
 }

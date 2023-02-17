@@ -19,7 +19,7 @@ public interface UserMapper {
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "login", ignore = true)
+    @Mapping(target = "username", ignore = true) //поменяла login на username
     User toEntity(UserDto userDto);
 
     Collection<UserDto> toDtoCollection(Collection<User> users);

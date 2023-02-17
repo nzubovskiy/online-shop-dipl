@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,6 @@ public class AdsService {
         this.adsMapper = adsMapper;
         this.fullAdsMapper = fullAdsMapper;
         this.imageService = imageService;
-
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -63,7 +61,7 @@ public class AdsService {
 
     public void deleteAds(Integer pk, Authentication authentication) {
         Ads ads = getAds(pk);
-        checkPermissionAlterAds(authentication, ads);
+        userService.checkUserHaveRights(authentication, ads.getUser().getUsername());;
         adsRepository.deleteById(pk);
     }
 
@@ -74,7 +72,7 @@ public class AdsService {
             adsEntity.setTitle(ads.getTitle());
             adsEntity.setPrice(ads.getPrice());
             adsEntity.setDescription(ads.getDescription());
-            checkPermissionAlterAds(authentication, adsEntity);
+            userService.checkUserHaveRights(authentication, adsEntity.getUser().getUsername());
             adsRepository.save(adsEntity);
         });
         return optionalAds
@@ -82,17 +80,10 @@ public class AdsService {
                 .orElse(null);
     }
 
-    private void checkPermissionAlterAds(Authentication authentication,Ads ads) {
-        boolean userIsAdmin = userService.checkUserIsAdmin(authentication);
-        boolean userIsMe = userService.checkUserIsMe(authentication);
 
-        if (!userIsAdmin && !userIsMe) {
-            throw new RuntimeException("403 Forbidden");
-        }
-    }
 
     public ResponseWrapperAds getMyAds(String userLogin) {
-        List<Ads> myAds = adsRepository.findByUserLogin(userLogin);
+        List<Ads> myAds = adsRepository.findByUserUsername(userLogin);
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
         if (!myAds.isEmpty()) {
             wrapperAds.setCount(myAds.size());

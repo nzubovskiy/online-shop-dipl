@@ -24,6 +24,10 @@ public class Image {
     @JoinColumn(name = "ads_pk")
     private Ads ads;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

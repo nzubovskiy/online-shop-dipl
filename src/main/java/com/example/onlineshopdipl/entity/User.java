@@ -26,7 +26,7 @@ public class User {
     private String image;
     @Enumerated(EnumType.STRING)
     private Role role;
-    private String login;
+    private String username; //поменяла login на username
     private String password;
 
     @OneToMany(mappedBy = "user")

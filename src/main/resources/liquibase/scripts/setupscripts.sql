@@ -11,7 +11,7 @@ CREATE TABLE users(
     city text,
     image text,
     role text,
-    login text ,
+    username text,
     password text
     );
 
