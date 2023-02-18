@@ -128,10 +128,10 @@ public class UserController {
             produces = { "*/*" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<byte[]> updateUserImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+    public ResponseEntity<Void> updateUserImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
                                                  Authentication authentication) throws IOException {
 
-        byte[] imageBytes = imageService.updateUserImage(id, image, authentication);
-        return ResponseEntity.ok(imageBytes);
+        imageService.updateUserImage(id, image, authentication);
+        return ResponseEntity.ok().build();
     }
 }

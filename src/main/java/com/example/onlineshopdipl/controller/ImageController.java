@@ -1,16 +1,12 @@
 package com.example.onlineshopdipl.controller;
 
-import com.example.onlineshopdipl.dto.AdsDto;
 import com.example.onlineshopdipl.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -46,19 +42,13 @@ public class ImageController {
             produces = { "application/octet-stream" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<byte[]> updateImage(
+    public ResponseEntity<Void> updateAdsImage(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image,
             Authentication authentication)
     {
-        imageService.saveImage(image);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
-    public byte[] getImage(@PathVariable Integer id){
-        return imageService.getImage(id);
-    }
-        return ResponseEntity.ok(imageService.updateAdsImage(id, image, authentication));
+        imageService.updateAdsImage(id, image, authentication);
+        return ResponseEntity.ok().build();
     }
 
 
