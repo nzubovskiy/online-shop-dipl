@@ -5,7 +5,6 @@ import com.example.onlineshopdipl.dto.Role;
 import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.exception.UserNoRightsException;
-import com.example.onlineshopdipl.exception.UserNotFoundException;
 import com.example.onlineshopdipl.mapper.UserMapper;
 import com.example.onlineshopdipl.repository.ImageRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
@@ -32,7 +31,7 @@ public class UserService {
     }
 
     public UserDto editUser(UserDto user, String username) {
-        Optional<User> optionalUser = Optional.of(getUser(username));
+        Optional<User> optionalUser = Optional.ofNullable(getUser(username));
 
         optionalUser.ifPresent(userEntity -> {
             userEntity.setFirstName(user.getFirstName());
@@ -46,8 +45,8 @@ public class UserService {
                 .orElse(null);
     }
 
-    public User getMe(String username) {
-        return userRepository.findUserByUsername(username);
+    public UserDto getMe(String username) {
+        return userMapper.toDTO(getUser(username));
     }
 
     public UserDto changePassword(NewPassword newPassword, String username) {
