@@ -6,6 +6,7 @@ import com.example.onlineshopdipl.dto.UserDto;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.exception.UserNoRightsException;
 import com.example.onlineshopdipl.mapper.UserMapper;
+import com.example.onlineshopdipl.repository.ImageRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    private final ImageRepository imageRepository;
+
+    public UserService(UserRepository userRepository, UserMapper userMapper, ImageRepository imageRepository) {
         this.userRepository = userRepository;
         this.userMapper=userMapper;
+        this.imageRepository = imageRepository;
     }
 
     public UserDto findUser(Integer id) {
