@@ -46,7 +46,7 @@ public class AdsService {
         return wrapperAds;
     }
     public AdsDto createAds(Authentication authentication, CreateAds createAds, MultipartFile image) {
-        User user = userService.getUserByLogin(authentication.getName());
+        User user = userService.getUser(authentication.getName());
         boolean exist = adsRepository.findByTitleAndUserId(createAds.getTitle(), user.getId());
         if (exist) {
             return null;
@@ -66,7 +66,7 @@ public class AdsService {
     }
 
     public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
-        User user = userService.getUserByLogin(authentication.getName());
+        User user = userService.getUser(authentication.getName());
         Optional<Ads> optionalAds = adsRepository.findByPkAndUserId(pk, user.getId());
         optionalAds.ifPresent(adsEntity ->{
             adsEntity.setTitle(ads.getTitle());
