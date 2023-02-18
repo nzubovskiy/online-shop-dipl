@@ -79,9 +79,8 @@ public class UserController {
     )
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @GetMapping("/me")
-    public ResponseEntity<User> getUser_1(Authentication authentication){
-        User user = userService.getMe(authentication.getName());
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUser_1(Authentication authentication){
+        return ResponseEntity.ok(userService.getMe(authentication.getName()));
     }
 
     @Operation(
@@ -107,6 +106,9 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Authentication authentication) {
         UserDto user = userService.editUser(userDto, authentication.getName());
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(user);
     }
 

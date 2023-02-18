@@ -10,6 +10,4 @@ import org.springframework.security.core.Authentication;
 public interface AuthService {
     boolean login(String userName, String password);
     boolean register(RegisterReq registerReq, Role role);
-
-    void changePassword(NewPassword newPassword, Authentication authentication);
 }
