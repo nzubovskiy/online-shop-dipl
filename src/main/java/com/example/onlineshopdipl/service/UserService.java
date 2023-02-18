@@ -58,8 +58,8 @@ public class UserService {
         return null;
     }
 
-    public User getUserByLogin(String userLogin) {
-        return userRepository.findByEmail(userLogin);
+    public User getUserByLogin(String username) {
+        return userRepository.findByEmail(username);
     }
 
     public void checkUserHaveRights(Authentication authentication, String username) {
