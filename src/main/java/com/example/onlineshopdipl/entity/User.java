@@ -35,4 +35,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Ads> ads;
 
+    @OneToMany(mappedBy = "user")
+    private Set<Image> images;
+
 }

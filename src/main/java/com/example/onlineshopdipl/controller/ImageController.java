@@ -42,12 +42,13 @@ public class ImageController {
             produces = { "application/octet-stream" },
             consumes = { "multipart/form-data" }
     )
-    public ResponseEntity<byte[]> updateImage(
+    public ResponseEntity<Void> updateAdsImage(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "image", required = true) @RequestPart(value = "image") MultipartFile image,
             Authentication authentication)
     {
-        return ResponseEntity.ok(imageService.updateAdsImage(id, image, authentication));
+        imageService.updateAdsImage(id, image, authentication);
+        return ResponseEntity.ok().build();
     }
 
 
