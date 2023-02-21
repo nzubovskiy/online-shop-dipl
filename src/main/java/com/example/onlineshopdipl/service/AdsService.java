@@ -2,9 +2,11 @@ package com.example.onlineshopdipl.service;
 
 import com.example.onlineshopdipl.dto.AdsDto;
 import com.example.onlineshopdipl.dto.CreateAds;
+import com.example.onlineshopdipl.dto.FullAds;
 import com.example.onlineshopdipl.dto.ResponseWrapperAds;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.exception.AdsNotFoundException;
 import com.example.onlineshopdipl.mapper.AdsMapper;
 import com.example.onlineshopdipl.mapper.CreateAdsMapper;
 import com.example.onlineshopdipl.mapper.FullAdsMapper;
@@ -55,12 +57,16 @@ public class AdsService {
         return adsMapper.toDTO(adsRepository.save(ads));
     }
 
-    public Ads getAds(Integer pk) {
-        return adsRepository.findByPk(pk);
+    public FullAds getAds(Integer pk) {
+        Ads ads = adsRepository.findByPk(pk);
+        if (ads == null) {
+            throw new AdsNotFoundException("Объявление не найдено");
+        }
+        return fullAdsMapper.toDto(ads);
     }
 
     public void deleteAds(Integer pk, Authentication authentication) {
-        Ads ads = getAds(pk);
+        Ads ads = adsRepository.findByPk(pk);
         userService.checkUserHaveRights(authentication, ads.getUser().getUsername());;
         adsRepository.deleteById(pk);
     }
@@ -69,10 +75,10 @@ public class AdsService {
         User user = userService.getUser(authentication.getName());
         Optional<Ads> optionalAds = adsRepository.findByPkAndUserId(pk, user.getId());
         optionalAds.ifPresent(adsEntity ->{
+            userService.checkUserHaveRights(authentication, adsEntity.getUser().getUsername());
             adsEntity.setTitle(ads.getTitle());
             adsEntity.setPrice(ads.getPrice());
             adsEntity.setDescription(ads.getDescription());
-            userService.checkUserHaveRights(authentication, adsEntity.getUser().getUsername());
             adsRepository.save(adsEntity);
         });
         return optionalAds
@@ -82,8 +88,8 @@ public class AdsService {
 
 
 
-    public ResponseWrapperAds getMyAds(String userLogin) {
-        List<Ads> myAds = adsRepository.findByUserUsername(userLogin);
+    public ResponseWrapperAds getMyAds(String username) {
+        List<Ads> myAds = adsRepository.findByUserUsername(username);
         ResponseWrapperAds wrapperAds = new ResponseWrapperAds();
         if (!myAds.isEmpty()) {
             wrapperAds.setCount(myAds.size());

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -40,21 +41,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {
-        com.example.onlineshopdipl.entity.User user = userRepository.findUserByUsername(registerReq.getUsername());
         if (manager.userExists(registerReq.getUsername())) {
             return false;
         }
 
-        com.example.onlineshopdipl.entity.User savedUser = new User();
-        savedUser.setUsername(registerReq.getUsername());
-        savedUser.setPassword(registerReq.getPassword());
-        savedUser.setFirstName(registerReq.getFirstName());
-        savedUser.setLastName(registerReq.getLastName());
-        savedUser.setPhone(registerReq.getPhone());
-        savedUser.setRegDate(LocalDateTime.now());
-        savedUser.setRole(role);
+        manager.createUser(
+                org.springframework.security.core.userdetails.User.withDefaultPasswordEncoder()
+                        .password(registerReq.getPassword())
+                        .username(registerReq.getUsername())
+                        .roles(role.name())
+                        .build()
+        );
 
-        userRepository.save(savedUser);
+        User user = userRepository.findUserByUsername(registerReq.getUsername());
+        user.setFirstName(registerReq.getFirstName());
+        user.setLastName(registerReq.getLastName());
+        user.setPhone(registerReq.getPhone());
+        user.setRegDate(LocalDateTime.now());
+        user.setRole(role);
+
+        userRepository.save(user);
         return true;
     }
 }

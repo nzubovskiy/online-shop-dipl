@@ -3,7 +3,6 @@ package com.example.onlineshopdipl.controller;
 import com.example.onlineshopdipl.dto.*;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
-import com.example.onlineshopdipl.repository.CommentRepository;
 import com.example.onlineshopdipl.service.AdsService;
 import com.example.onlineshopdipl.service.CommentService;
 import com.example.onlineshopdipl.service.ImageService;
@@ -35,14 +34,13 @@ public class AdsController {
     private final AdsService adsService;
     private final CommentService commentService;
     private final ImageService imageService;
-    private final CommentRepository commentRepository;
-    private static final String IMAGE_PATH = "/ads";
 
-    public AdsController(AdsService adsService, CommentService commentService, ImageService imageService, CommentRepository commentRepository) {
+
+
+    public AdsController(AdsService adsService, CommentService commentService, ImageService imageService) {
         this.adsService = adsService;
         this.commentService = commentService;
         this.imageService = imageService;
-        this.commentRepository = commentRepository;
     }
 
 
@@ -54,7 +52,8 @@ public class AdsController {
     )
     @GetMapping()
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return ResponseEntity.ok(adsService.getAllAds());
+        ResponseWrapperAds allAds = adsService.getAllAds();
+        return ResponseEntity.ok(allAds);
     }
 
     @Operation(
@@ -75,7 +74,6 @@ public class AdsController {
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
             @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image,
             Authentication authentication) throws IOException {
-        Integer imagePath = imageService.saveImage(image);
 
         AdsDto adsDto = adsService.createAds(authentication, properties, image);
 
@@ -113,9 +111,10 @@ public class AdsController {
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PostMapping(value = "/{ad_pk}/comments")
     public ResponseEntity<CommentDto> addComments(@RequestBody CommentDto commentDto,
-            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk
-    ) {
-        CommentDto comment = commentService.addComments(commentDto, adPk);
+            @Parameter(name = "ad_pk", in = ParameterIn.PATH, required = true) @PathVariable("ad_pk") Integer adPk,
+            Authentication authentication)
+    {
+        CommentDto comment = commentService.addComments(commentDto, adPk, authentication);
         return ResponseEntity.ok(comment);
     }
 
@@ -131,15 +130,15 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public Ads getAds(
+    public ResponseEntity<FullAds> getAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
-        Ads ads = adsService.getAds(id);
+        FullAds fullAds = adsService.getAds(id);
 
-        if (ads == null) {
+        if (fullAds == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ads;
+        return ResponseEntity.ok(fullAds);
     }
 
     @Operation(
@@ -175,13 +174,16 @@ public class AdsController {
     )
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PatchMapping("/{id})")
-    public AdsDto updateAds(
+    public ResponseEntity<AdsDto> updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
             @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads,
             Authentication authentication)
     {
         AdsDto adsDto = adsService.updateAds(authentication, id, ads);
-        return adsDto;
+        if (adsDto == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(adsDto);
     }
 
     @Operation(
