@@ -46,7 +46,8 @@ public class UserService {
     }
 
     public UserDto getMe(String username) {
-        return userMapper.toDTO(getUser(username));
+        User user = userRepository.findUserByUsername(username);
+        return userMapper.toDTO(user);
     }
 
     public UserDto changePassword(NewPassword newPassword, String username) {

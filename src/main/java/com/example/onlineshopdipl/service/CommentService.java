@@ -4,8 +4,6 @@ import com.example.onlineshopdipl.dto.CommentDto;
 import com.example.onlineshopdipl.dto.ResponseWrapperComment;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
-import com.example.onlineshopdipl.entity.User;
-import com.example.onlineshopdipl.exception.UserNoRightsException;
 import com.example.onlineshopdipl.mapper.CommentMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.CommentRepository;
@@ -32,7 +30,7 @@ public class CommentService {
         this.userService = userService;
     }
 
-    public CommentDto addComments(CommentDto commentDto, Integer pk) {
+    public CommentDto addComments(CommentDto commentDto, Integer pk, Authentication authentication) {
         Ads ads = adsRepository.findByPk(pk);
         Comment commentEntity = commentMapper.toEntity(commentDto);
         Comment comment = new Comment();
