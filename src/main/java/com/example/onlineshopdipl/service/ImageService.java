@@ -52,20 +52,18 @@ public class ImageService {
     public byte[] updateAdsImage(Integer id, MultipartFile image, Authentication authentication)  {
         Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
         userService.checkUserHaveRights(authentication, presentImage.getAds().getUser().getUsername());
-        byte[] imageBytes = new byte[0];
-        try {
-            imageBytes = image.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        presentImage.setImage(imageBytes);
-        Image savedImage = imageRepository.save(presentImage);
-        return savedImage.getImage();
+        return getBytes(image, presentImage);
     }
+
+
 
     public byte[] updateUserImage(Integer id, MultipartFile image, Authentication authentication)  {
         Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
         userService.checkUserHaveRights(authentication, presentImage.getUser().getUsername());
+        return getBytes(image, presentImage);
+    }
+
+    private byte[] getBytes(MultipartFile image, Image presentImage) {
         byte[] imageBytes = new byte[0];
         try {
             imageBytes = image.getBytes();
