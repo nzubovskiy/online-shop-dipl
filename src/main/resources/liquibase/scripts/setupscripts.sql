@@ -40,3 +40,8 @@ CREATE TABLE image(
     user_id serial references users (id) not null
 );
 
+-- changeset nzubovskiy:2
+   alter table users
+        add column enabled smallint;
+
+
