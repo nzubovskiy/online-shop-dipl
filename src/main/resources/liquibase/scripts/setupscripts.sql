@@ -3,24 +3,25 @@
 -- changeset nzubovskiy:1
 CREATE TABLE users(
     id serial primary key,
-    email text not null,
-    first_name text not null,
-    last_name text not null,
-    phone text not null,
-    reg_date timestamp not null,
-    city text not null,
-    image text not null,
-    role text not null,
-    username text not null,
-    password text not null
+    email text,
+    first_name text,
+    last_name text,
+    phone text,
+    reg_date timestamp,
+    city text,
+    image text,
+    role text,
+    username text,
+    password text,
+    enabled BOOLEAN
     );
 
 CREATE TABLE ads(
    pk serial primary key,
-   image text not null,
-   price integer not null,
-   title text not null,
-   description text not null,
+   image text,
+   price integer,
+   title text,
+   description text,
    user_id serial references users (id)
    );
 
@@ -35,8 +36,16 @@ CREATE TABLE comments(
 -- changeset elenazmeeva:2
 CREATE TABLE image(
     id serial primary key,
-    image bytea not null,
-    ads_pk serial references ads(pk) not null,
-    user_id serial references users (id) not null
+    image bytea,
+    ads_pk serial references ads(pk),
+    user_id serial references users (id)
 );
+
+-- changeset elenazmeeva:3
+CREATE TABLE authorities(
+    username text not null,
+    authority text not null,
+    FOREIGN KEY (username) REFERENCES users(id)
+)
+
 

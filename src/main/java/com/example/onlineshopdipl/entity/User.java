@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
     private String email;
     @Column(name = "first_name")
@@ -28,6 +28,7 @@ public class User {
     private Role role;
     private String username; //поменяла login на username
     private String password;
+    private Boolean enabled;
 
     @OneToMany(mappedBy = "user")
     private Set<Comment> comments;
