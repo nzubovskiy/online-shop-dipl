@@ -26,7 +26,7 @@ public interface FullAdsMapper {
     @Mapping(source = "pk", target = "pk")
     @Mapping(source = "user.firstName", target = "authorFirstName")
     @Mapping(source = "user.lastName", target = "authorLastName")
-    @Mapping(source = "user.email", target = "email")
+    @Mapping(source = "user.username", target = "email")
     @Mapping(source = "user.phone", target = "phone")
     FullAds toDto(Ads entity);
 
