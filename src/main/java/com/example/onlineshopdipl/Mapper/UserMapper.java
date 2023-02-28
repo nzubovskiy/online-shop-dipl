@@ -15,11 +15,10 @@ import java.util.Collection;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper {
 
+    @Mapping(source = "username", target = "email")
     UserDto toDTO(User user);
 
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "role", ignore = true)
-    @Mapping(target = "username", ignore = true) //поменяла login на username
+    @Mapping(source = "email", target = "username")
     User toEntity(UserDto userDto);
 
     Collection<UserDto> toDtoCollection(Collection<User> users);
