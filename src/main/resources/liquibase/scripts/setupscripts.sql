@@ -2,6 +2,7 @@
 
 -- changeset nzubovskiy:1
 CREATE TABLE users(
+
                       id serial primary key,
                       first_name text not null,
                       last_name text not null,
@@ -33,6 +34,7 @@ CREATE TABLE comments(
 
 -- changeset elenazmeeva:2
 CREATE TABLE image(
+
                       id serial primary key,
                       image bytea not null,
                       ads_pk serial references ads(pk) not null,

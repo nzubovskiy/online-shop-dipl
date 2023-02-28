@@ -34,6 +34,7 @@ public class UserService {
         Optional<User> optionalUser = Optional.ofNullable(getUser(username));
 
         optionalUser.ifPresent(userEntity -> {
+            userMapper.toEntity(user);
             userEntity.setFirstName(user.getFirstName());
             userEntity.setLastName(user.getLastName());
             userEntity.setPhone(user.getPhone());
