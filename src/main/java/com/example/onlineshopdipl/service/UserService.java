@@ -40,9 +40,7 @@ public class UserService {
 
             userRepository.save(userEntity);
         });
-        return optionalUser
-                .map(userMapper::toDTO)
-                .orElse(null);
+        return userMapper.toDTO(getUser(username));
     }
 
     public UserDto getMe(String username) {
