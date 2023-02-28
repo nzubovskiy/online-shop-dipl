@@ -5,6 +5,7 @@ import com.example.onlineshopdipl.dto.CreateAds;
 import com.example.onlineshopdipl.dto.FullAds;
 import com.example.onlineshopdipl.dto.ResponseWrapperAds;
 import com.example.onlineshopdipl.entity.Ads;
+import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.exception.AdsNotFoundException;
 import com.example.onlineshopdipl.mapper.AdsMapper;
