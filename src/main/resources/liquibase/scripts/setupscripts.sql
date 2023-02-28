@@ -45,7 +45,7 @@ CREATE TABLE image(
 CREATE TABLE authorities(
     username text not null,
     authority text not null,
-    FOREIGN KEY (username) REFERENCES users(id)
+    FOREIGN KEY (username) REFERENCES users(username)
 )
 
 
