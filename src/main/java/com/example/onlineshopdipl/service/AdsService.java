@@ -29,6 +29,7 @@ public class AdsService {
     private final FullAdsMapper fullAdsMapper;
     private final ImageService imageService;
 
+
     public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, ImageService imageService) {
         this.adsRepository = adsRepository;
         this.userService = userService;
@@ -54,7 +55,7 @@ public class AdsService {
         if (exist) {
             return null;
         }
-        Ads ads = createAdsMapper.toEntity(createAds, user, createAds.getTitle());
+        Ads ads = createAdsMapper.toEntity(createAds, user);
         return adsMapper.toDTO(adsRepository.save(ads));
     }
 
