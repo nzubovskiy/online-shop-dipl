@@ -9,7 +9,7 @@ import com.example.onlineshopdipl.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -39,13 +39,13 @@ public class UserController {
     @Operation(
             tags = "Пользователи",
             summary = "setPassword",
-            operationId = "setPassword",
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = NewPassword.class))
-            ),
+            operationId = "setPassword"//,
+            //requestBody = @RequestBody(
+             //       required = true,
+                    //content = @Content(
+                         //   mediaType = MediaType.APPLICATION_JSON_VALUE,
+                         //   schema = @Schema(implementation = NewPassword.class))
+            ,//)
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
                         @Content(mediaType = "*/*", schema = @Schema(implementation = NewPassword.class))),
@@ -87,12 +87,12 @@ public class UserController {
             tags = "Пользователи",
             summary = "updateUser",
             operationId = "updateUser",
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = UserDto.class))
-            ),
+           // requestBody = @RequestBody(
+             //       required = true,
+                    //content = @Content(
+                     //       mediaType = MediaType.APPLICATION_JSON_VALUE,
+                     //       schema = @Schema(implementation = UserDto.class))
+            //),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
                         @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))),
