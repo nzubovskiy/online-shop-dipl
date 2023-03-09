@@ -5,10 +5,9 @@ import org.aspectj.lang.annotation.RequiredTypes;
 import org.springframework.stereotype.Component;
 
 @Data
-@RequiredTypes({"description", "price", "title"})
+//@RequiredTypes({"description", "price", "title"})
 public class CreateAds {
     private String description;
     private Integer price;
     private String title;
-    private String image;
 }

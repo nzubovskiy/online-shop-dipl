@@ -18,7 +18,6 @@ CREATE TABLE users(
 
 CREATE TABLE ads(
    pk serial primary key,
-   image text,
    price integer,
    title text,
    description text,
@@ -46,6 +45,7 @@ CREATE TABLE authorities(
     username text not null,
     authority text not null,
     FOREIGN KEY (username) REFERENCES users(username)
-)
+);
+
 
 
