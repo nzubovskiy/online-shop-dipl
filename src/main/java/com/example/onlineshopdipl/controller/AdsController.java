@@ -62,14 +62,14 @@ public class AdsController {
             operationId = "addAds",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created", content =
-                    @Content(mediaType = "*/*", schema = @Schema(implementation = Ads.class))),
+                    @Content(mediaType = "*/*", schema = @Schema(implementation = AdsDto.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAds(
             @Parameter(name = "properties", required = true) @RequestParam(value = "properties") CreateAds properties,
             @Parameter(name = "image", required = true) @RequestParam(value = "image") MultipartFile image,
