@@ -18,3 +18,5 @@ public interface CreateAdsMapper {
 
     CreateAds toDto(Ads ads);
 }
+
+

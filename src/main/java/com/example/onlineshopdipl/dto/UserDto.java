@@ -15,3 +15,4 @@ public class UserDto {
     private String city;
     private String image;
 }
+

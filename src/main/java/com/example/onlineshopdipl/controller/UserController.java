@@ -70,7 +70,7 @@ public class UserController {
             operationId = "getUser_1",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
-                        @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))),
+                        @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
                     @ApiResponse(responseCode = "404", description = "Not Found")
@@ -95,7 +95,7 @@ public class UserController {
             //),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
-                        @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))),
+                        @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))),
                     @ApiResponse(responseCode = "204", description = "No Content"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -124,14 +124,11 @@ public class UserController {
             }
     )
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    @RequestMapping(
-            method = RequestMethod.PATCH,
-            value = "/me/image",
-            produces = { "*/*" },
-            consumes = { "multipart/form-data" }
-    )
-    public ResponseEntity<Void> updateUserImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
-                                                 Authentication authentication) throws IOException {
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+
+    public ResponseEntity<byte[]> updateUserImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+                                                 Authentication authentication)  {
 
         imageService.updateUserImage(id, image, authentication);
         return ResponseEntity.ok().build();
