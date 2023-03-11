@@ -1,5 +1,6 @@
 package com.example.onlineshopdipl.service;
 
+import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.repository.AdsRepository;
