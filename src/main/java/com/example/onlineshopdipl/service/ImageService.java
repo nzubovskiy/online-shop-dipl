@@ -1,6 +1,5 @@
 package com.example.onlineshopdipl.service;
 
-import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.repository.AdsRepository;
@@ -30,16 +29,19 @@ public class ImageService {
         this.userService = userService;
     }
 
-    public Integer saveImage(MultipartFile image){
+    public Image saveImage(MultipartFile image, Ads ads){
         Image image1= new Image();
+        byte[] bytes;
         try{
-            byte[] bytes= image.getBytes();
+            bytes= image.getBytes();
             image1.setImage(bytes);
         }catch (IOException e){
             throw new RuntimeException(e);
         }
         image1.setId(Integer.valueOf(UUID.randomUUID().toString()));
-        return imageRepository.save(image1).getId();
+        image1.setImage(bytes);
+        image1.setAds(ads);
+        return imageRepository.save(image1);
     }
 
     public byte[] getImage(Integer id){

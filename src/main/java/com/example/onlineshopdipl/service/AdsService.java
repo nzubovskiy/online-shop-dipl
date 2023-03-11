@@ -14,8 +14,10 @@ import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,14 +50,24 @@ public class AdsService {
         else wrapperAds.setResults(Collections.emptyList());
         return wrapperAds;
     }
+
     public AdsDto createAds(Authentication authentication, CreateAds createAds, MultipartFile image) {
         User user = userService.getUser(authentication.getName());
         boolean exist = adsRepository.findByTitleAndUserId(createAds.getTitle(), user.getId());
         if (exist) {
             return null;
         }
-        Ads ads = createAdsMapper.toEntity(createAds, user, createAds.getTitle());
-        return adsMapper.toDTO(adsRepository.save(ads));
+        Ads ads = createAdsMapper.toEntity(createAds, user);
+        ads.setUser(user);
+        Ads savedAds = adsRepository.save(ads);
+
+        Image adsImage = imageService.saveImage(image, ads);
+        List<Image> imageList = new ArrayList<>();
+        imageList.add(adsImage);
+        savedAds.setImages(imageList);
+
+        return adsMapper.toDTO(savedAds);
+
     }
 
     public FullAds getAds(Integer pk) {
@@ -68,7 +80,7 @@ public class AdsService {
 
     public void deleteAds(Integer pk, Authentication authentication) {
         Ads ads = adsRepository.findByPk(pk);
-        userService.checkUserHaveRights(authentication, ads.getUser().getUsername());;
+        userService.checkUserHaveRights(authentication, ads.getUser().getUsername());
         adsRepository.deleteById(pk);
     }
 
