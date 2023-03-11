@@ -12,6 +12,7 @@ import com.example.onlineshopdipl.mapper.AdsMapper;
 import com.example.onlineshopdipl.mapper.CreateAdsMapper;
 import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
+import com.example.onlineshopdipl.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +31,18 @@ public class AdsService {
     private final AdsMapper adsMapper;
     private final FullAdsMapper fullAdsMapper;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
-    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, ImageService imageService) {
+
+    public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, ImageService imageService,
+                      UserRepository userRepository) {
         this.adsRepository = adsRepository;
         this.userService = userService;
         this.createAdsMapper = createAdsMapper;
         this.adsMapper = adsMapper;
         this.fullAdsMapper = fullAdsMapper;
         this.imageService = imageService;
+        this.userRepository = userRepository;
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -59,6 +64,7 @@ public class AdsService {
         }
         Ads ads = createAdsMapper.toEntity(createAds, user);
         ads.setUser(user);
+
         Ads savedAds = adsRepository.save(ads);
 
         Image adsImage = imageService.saveImage(image, ads);
@@ -67,6 +73,7 @@ public class AdsService {
         savedAds.setImages(imageList);
 
         return adsMapper.toDTO(savedAds);
+
 
     }
 

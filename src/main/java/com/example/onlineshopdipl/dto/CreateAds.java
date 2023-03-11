@@ -4,6 +4,9 @@ import lombok.Data;
 
 
 @Data
+
+//@RequiredTypes({"description", "price", "title"})
+
 public class CreateAds {
     private String description;
     private Integer price;

@@ -2,52 +2,50 @@
 
 -- changeset nzubovskiy:1
 CREATE TABLE users(
-
-                      id serial primary key,
-                      first_name text not null,
-                      last_name text not null,
-                      phone text not null,
-                      reg_date timestamp not null,
-                      city text not null,
-                      image text not null,
-                      role text not null,
-                      username text not null,
-                      password text not null
-);
+    id serial primary key,
+    email text,
+    first_name text,
+    last_name text,
+    phone text,
+    reg_date timestamp,
+    city text,
+    image text,
+    role text,
+    username text,
+    password text,
+    enabled BOOLEAN
+    );
 
 CREATE TABLE ads(
-                    pk serial primary key,
-                    image text not null,
-                    price integer not null,
-                    title text not null,
-                    description text not null,
-                    user_id serial references users (id)
-);
+   pk serial primary key,
+   price integer,
+   title text,
+   description text,
+   user_id serial references users (id)
+   );
 
 CREATE TABLE comments(
-                         pk serial primary key,
-                         created_at timestamp not null,
-                         text text not null,
-                         user_id serial references users (id),
-                         ads_pk serial references ads(pk)
-);
+  pk serial primary key,
+  created_at timestamp not null,
+  text text not null,
+  user_id serial references users (id),
+  ads_pk serial references ads(pk)
+  );
 
 -- changeset elenazmeeva:2
 CREATE TABLE image(
-
-                      id serial primary key,
-                      image bytea not null,
-                      ads_pk serial references ads(pk) not null,
-                      user_id serial references users (id) not null
+    id serial primary key,
+    image bytea,
+    ads_pk serial references ads(pk),
+    user_id serial references users (id)
 );
 
--- changeset nzubovskiy:3
-alter table users
-    add column enabled smallint;
-
-CREATE TABLE authorities
-(
-    username  varchar(255) not null,
-    authority varchar(68)  not null,
-    foreign key (username) references users (username)
+-- changeset elenazmeeva:3
+CREATE TABLE authorities(
+    username text not null,
+    authority text not null,
+    FOREIGN KEY (username) REFERENCES users(username)
 );
+
+
+
