@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CreateAdsMapper {
     @Mapping(target = "pk", ignore = true)
-    @Mapping(target = "image", ignore = true)
     Ads toEntity(CreateAds createAds, User user);
 
     CreateAds toDto(Ads ads);
