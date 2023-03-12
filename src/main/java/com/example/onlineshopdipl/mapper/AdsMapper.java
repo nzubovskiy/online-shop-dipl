@@ -15,13 +15,11 @@ import java.util.List;
 public interface AdsMapper {
     @Mapping(source = "pk", target = "pk")
     @Mapping(source = "author", target = "user.id")
-    @Mapping(target = "image", ignore = true)
     @Mapping(target = "description", ignore = true)
     Ads toEntity(AdsDto adsDto);
 
     @Mapping(source = "pk", target = "pk")
     @Mapping(source = "user.id", target = "author")
-    @Mapping(source = "image", target = "image")
     AdsDto toDTO(Ads ads);
 
     List<AdsDto> toAdsDtoList(List<Ads> adsList);

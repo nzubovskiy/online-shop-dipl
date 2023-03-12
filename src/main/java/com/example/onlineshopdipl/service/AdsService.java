@@ -14,13 +14,12 @@ import com.example.onlineshopdipl.mapper.FullAdsMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class AdsService {
@@ -85,20 +84,18 @@ public class AdsService {
     }
 
     public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
+        Ads ads0 = adsRepository.findByPk(pk);
         User user = userService.getUser(authentication.getName());
-        Optional<Ads> optionalAds = adsRepository.findByPkAndUserId(pk, user.getId());
-        optionalAds.ifPresent(adsEntity ->{
-            userService.checkUserHaveRights(authentication, adsEntity.getUser().getUsername());
-            adsEntity.setTitle(ads.getTitle());
-            adsEntity.setPrice(ads.getPrice());
-            adsEntity.setDescription(ads.getDescription());
-            adsRepository.save(adsEntity);
-        });
-        return optionalAds
-                .map(adsMapper::toDTO)
-                .orElse(null);
-    }
+        userService.checkUserHaveRights(authentication, ads0.getUser().getUsername());
+        Ads update = createAdsMapper.toEntity(ads, user);
 
+        ads0.setPrice(update.getPrice());
+        ads0.setTitle(update.getTitle());
+        ads0.setDescription(update.getDescription());
+
+        Ads ads1 = adsRepository.save(ads0);
+        return adsMapper.toDTO(ads1);
+    }
 
 
     public ResponseWrapperAds getMyAds(String username) {
