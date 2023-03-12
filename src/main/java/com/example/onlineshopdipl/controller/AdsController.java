@@ -202,9 +202,9 @@ public class AdsController {
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
         CommentDto commentDto = commentService.getComments_1(adPk, id);
-        if (commentDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        //if (commentDto == null) {
+         //   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        //}
         return ResponseEntity.ok(commentDto);
     }
 

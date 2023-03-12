@@ -8,7 +8,6 @@ import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.exception.AdsNotFoundException;
-import com.example.onlineshopdipl.exception.UserNotFoundException;
 import com.example.onlineshopdipl.mapper.AdsMapper;
 import com.example.onlineshopdipl.mapper.CreateAdsMapper;
 import com.example.onlineshopdipl.mapper.FullAdsMapper;
@@ -38,7 +37,7 @@ public class AdsService {
 
     public AdsService(AdsRepository adsRepository, UserService userService, CreateAdsMapper createAdsMapper, AdsMapper adsMapper, FullAdsMapper fullAdsMapper, ImageService imageService,
                       UserRepository userRepository,
-                      CommentRepository commentRepository) {
+                       CommentRepository commentRepository1) {
         this.adsRepository = adsRepository;
         this.userService = userService;
         this.createAdsMapper = createAdsMapper;
@@ -46,6 +45,7 @@ public class AdsService {
         this.fullAdsMapper = fullAdsMapper;
         this.imageService = imageService;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository1;
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -93,7 +93,6 @@ public class AdsService {
 
 
     public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
-        Ads ads0=adsRepository.findByPk(pk);
 
         Ads ads0 = adsRepository.findByPk(pk);
         User user = userService.getUser(authentication.getName());
@@ -108,9 +107,6 @@ public class AdsService {
         return adsMapper.toDTO(ads1);
     }
 
-        Ads ads1=adsRepository.save(ads0);
-        return adsMapper.toDTO(ads1);
-    }
 
     public ResponseWrapperAds getMyAds(String username) {
         List<Ads> myAds = adsRepository.findByUserUsername(username);

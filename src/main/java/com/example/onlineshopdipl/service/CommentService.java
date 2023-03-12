@@ -27,7 +27,7 @@ public class CommentService {
 
 
 
-    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService) {
+    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
         this.commentMapper = commentMapper;
@@ -68,8 +68,6 @@ public class CommentService {
         commentOptional.ifPresent((commentRepository::delete));
 
     }
-
-
 
     public CommentDto updateComments(CommentDto commentDto, Integer adPk, Integer pk, Authentication authentication) {
         Comment comment = commentRepository.findByPk(pk);
