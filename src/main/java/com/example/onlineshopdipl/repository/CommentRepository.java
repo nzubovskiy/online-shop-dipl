@@ -15,4 +15,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     Comment findCommentsByAds_Pk(Integer pk);
 
     Optional<Comment> findByPkAndPk(Integer adPk, Integer pk);
+    //Comment findByPkAndPk(Integer adPk, Integer pk);
 }

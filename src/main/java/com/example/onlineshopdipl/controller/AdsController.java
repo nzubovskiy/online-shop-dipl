@@ -175,7 +175,7 @@ public class AdsController {
     @PatchMapping("/{id})")
     public ResponseEntity<AdsDto> updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-            @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads,
+             @RequestBody CreateAds ads,
             Authentication authentication)
     {
         AdsDto adsDto = adsService.updateAds(authentication, id, ads);
@@ -202,9 +202,7 @@ public class AdsController {
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
         CommentDto commentDto = commentService.getComments_1(adPk, id);
-        if (commentDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
         return ResponseEntity.ok(commentDto);
     }
 
@@ -243,7 +241,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     @PatchMapping("/{ad_pk}/comments/{id}")
     public ResponseEntity<CommentDto> updateComments(
             @Parameter(name = "ad_pk", required = true) @PathVariable("ad_pk") Integer adPk,

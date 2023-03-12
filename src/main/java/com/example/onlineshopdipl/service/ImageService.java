@@ -1,5 +1,6 @@
 package com.example.onlineshopdipl.service;
 
+import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.repository.AdsRepository;
@@ -40,7 +41,7 @@ public class ImageService {
         }catch (IOException e){
             throw new RuntimeException(e);
         }
-        image1.setId(Integer.valueOf(UUID.randomUUID().toString()));
+        image1.setId(image1.getId()); //Integer.valueOf(UUID.randomUUID().toString())
         image1.setImage(bytes);
         image1.setAds(ads);
         return imageRepository.save(image1);

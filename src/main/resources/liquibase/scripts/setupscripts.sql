@@ -46,6 +46,8 @@ CREATE TABLE authorities(
     authority text not null,
     FOREIGN KEY (username) REFERENCES users(username)
 );
+-- changeset elenazmeeva:4
+ALTER TABLE ads ADD COLUMN image text
 
 
 

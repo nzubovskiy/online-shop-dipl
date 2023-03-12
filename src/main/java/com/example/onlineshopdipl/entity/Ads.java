@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -14,6 +15,7 @@ public class Ads {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pk;
     private Integer price;
+    private String image;
     private String title;
     private String description;
     @ManyToOne
@@ -23,5 +25,7 @@ public class Ads {
     @OneToMany(mappedBy = "ads")
     private List<Image> images;
 
+    @OneToMany(mappedBy = "ads")
+    private Set<Comment> comments;
 
 }

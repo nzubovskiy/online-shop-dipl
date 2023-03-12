@@ -41,5 +41,4 @@ public class Image {
         return getClass().hashCode();
     }
 
-
 }
