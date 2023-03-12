@@ -175,7 +175,7 @@ public class AdsController {
     @PatchMapping("/{id})")
     public ResponseEntity<AdsDto> updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-            @Parameter(name = "CreateAds", required = true) @RequestBody CreateAds ads,
+            @RequestBody CreateAds ads,
             Authentication authentication)
     {
         AdsDto adsDto = adsService.updateAds(authentication, id, ads);

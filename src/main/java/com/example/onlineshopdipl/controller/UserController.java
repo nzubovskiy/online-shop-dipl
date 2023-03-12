@@ -3,7 +3,6 @@ package com.example.onlineshopdipl.controller;
 
 import com.example.onlineshopdipl.dto.NewPassword;
 import com.example.onlineshopdipl.dto.UserDto;
-import com.example.onlineshopdipl.entity.User;
 import com.example.onlineshopdipl.service.ImageService;
 import com.example.onlineshopdipl.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -118,7 +117,7 @@ public class UserController {
             tags = { "Пользователи" },
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = User.class))
+                            @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))
                     }),
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
@@ -127,10 +126,20 @@ public class UserController {
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 
 
-    public ResponseEntity<byte[]> updateUserImage(@PathVariable("id") Integer id, @RequestPart MultipartFile image,
+    public ResponseEntity<Void> updateUserImage(@org.springframework.web.bind.annotation.RequestBody MultipartFile image,
                                                  Authentication authentication)  {
 
-        imageService.updateUserImage(id, image, authentication);
+        userService.updateUserImage(image, authentication);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "getUserAvatar",
+            responses = {@ApiResponse(
+                    responseCode = "200"),
+                    @ApiResponse(responseCode = "404", content = @Content)
+            })
+    @GetMapping(value = "/avater/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getUserImage(@PathVariable Integer id) {
+        return ResponseEntity.ok(userService.getUserImage(id));
     }
 }
