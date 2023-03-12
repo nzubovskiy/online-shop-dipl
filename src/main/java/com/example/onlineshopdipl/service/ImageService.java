@@ -30,19 +30,9 @@ public class ImageService {
         this.userService = userService;
     }
 
-
     public Image saveImage(MultipartFile image, Ads ads){
         Image image1= new Image();
-        byte[] bytes;
-
-        try{
-            bytes= image.getBytes();
-            image1.setImage(bytes);
-        }catch (IOException e){
-            throw new RuntimeException(e);
-        }
-        image1.setId(image1.getId()); //Integer.valueOf(UUID.randomUUID().toString())
-        image1.setImage(bytes);
+        extractInfo(image, image1);
         image1.setAds(ads);
         return imageRepository.save(image1);
     }
@@ -57,15 +47,9 @@ public class ImageService {
     public byte[] updateAdsImage(Integer id, MultipartFile image, Authentication authentication)  {
         Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
         userService.checkUserHaveRights(authentication, presentImage.getAds().getUser().getUsername());
-        return getBytes(image, presentImage);
-    }
-
-
-
-    public byte[] updateUserImage(Integer id, MultipartFile image, Authentication authentication)  {
-        Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
-        userService.checkUserHaveRights(authentication, presentImage.getUser().getUsername());
-        return getBytes(image, presentImage);
+        extractInfo(image, presentImage);
+        Image newImage = imageRepository.save(presentImage);
+        return newImage.getImage();
     }
 
     private byte[] getBytes(MultipartFile image, Image presentImage) {
@@ -78,6 +62,20 @@ public class ImageService {
         presentImage.setImage(imageBytes);
         Image savedImage = imageRepository.save(presentImage);
         return savedImage.getImage();
+    }
+
+    private void extractInfo(MultipartFile file, Image image) {
+        if (file.isEmpty()) {
+            throw new ImageNotFoundException();
+        }
+        byte[] imageBytes;
+        try {
+            imageBytes = file.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("С загружаемым файлом возникла проблема. Загрузите другой файл.");
+        }
+        image.setId(Integer.valueOf(UUID.randomUUID().toString()));
+        image.setImage(imageBytes);
     }
 
 }

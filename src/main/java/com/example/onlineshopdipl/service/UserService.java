@@ -3,14 +3,18 @@ package com.example.onlineshopdipl.service;
 import com.example.onlineshopdipl.dto.NewPassword;
 import com.example.onlineshopdipl.dto.Role;
 import com.example.onlineshopdipl.dto.UserDto;
+import com.example.onlineshopdipl.entity.Image;
 import com.example.onlineshopdipl.entity.User;
+import com.example.onlineshopdipl.exception.ImageNotFoundException;
 import com.example.onlineshopdipl.exception.UserNoRightsException;
 import com.example.onlineshopdipl.mapper.UserMapper;
 import com.example.onlineshopdipl.repository.ImageRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -24,10 +28,6 @@ public class UserService {
         this.userRepository = userRepository;
         this.userMapper=userMapper;
         this.imageRepository = imageRepository;
-    }
-
-    public UserDto findUser(Integer id) {
-        return userMapper.toDTO(userRepository.findById(id).get());
     }
 
     public UserDto editUser(UserDto user, String username) {
@@ -69,5 +69,27 @@ public class UserService {
         if (!(checkUserIsAdmin || checkUserIsMe)) {
             throw new UserNoRightsException("You have no rights to perform this operation");
         }
+    }
+
+    public void updateUserImage(MultipartFile image, Authentication authentication)  {
+        if (image.isEmpty()) {
+            throw new RuntimeException("Файл пустой");
+        }
+        User user = getUser(authentication.getName());
+        Image ava = imageRepository.findByUserId(user.getId()).orElse(new Image());
+
+        try {
+            ava.setImage(image.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Проблема с загружаемым файлом");
+        }
+        ava.setUser(user);
+        imageRepository.save(ava);
+
+    }
+
+    public byte[] getUserImage(Integer id) {
+        Image image = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
+        return image.getImage();
     }
 }

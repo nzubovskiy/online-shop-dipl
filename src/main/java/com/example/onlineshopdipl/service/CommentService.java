@@ -5,7 +5,6 @@ import com.example.onlineshopdipl.dto.ResponseWrapperComment;
 import com.example.onlineshopdipl.entity.Ads;
 import com.example.onlineshopdipl.entity.Comment;
 import com.example.onlineshopdipl.entity.User;
-import com.example.onlineshopdipl.exception.UserNotFoundException;
 import com.example.onlineshopdipl.mapper.CommentMapper;
 import com.example.onlineshopdipl.repository.AdsRepository;
 import com.example.onlineshopdipl.repository.CommentRepository;
@@ -14,8 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +26,8 @@ public class CommentService {
     private final UserRepository userRepository;
 
 
-    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService,
-                          UserRepository userRepository) {
+
+    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
         this.commentMapper = commentMapper;
@@ -40,20 +37,23 @@ public class CommentService {
 
     public CommentDto addComments(CommentDto commentDto, Integer pk, Authentication authentication) {
         Ads ads = adsRepository.findByPk(pk);
-        User user=userService.getUser(authentication.getName());
+        User user = userService.getUser(authentication.getName());
         Comment comment = commentMapper.toEntity(commentDto);
-        comment.setAds(ads);
-        comment.setUser(user);
 
-        comment.setCreatedAt(LocalDateTime.now());
-        Comment comment1=commentRepository.save(comment);
+            comment.setAds(ads);
+            comment.setUser(user);
+            comment.setCreatedAt(LocalDateTime.now());
 
-        return commentMapper.toDTO(comment1);
+            Comment newComment = commentRepository.save(comment);
+
+        return commentMapper.toDTO(newComment);
     }
 
     public ResponseWrapperComment getAllCommentsByAd(Integer adPk) {
-        List<Comment> allComments = commentRepository.findAllByPk(adPk);
+        Ads ads = adsRepository.findByPk(adPk);
+        List<Comment> allComments = commentRepository.findCommentsByAds_Pk(adPk);
         ResponseWrapperComment wrapperComment = new ResponseWrapperComment();
+
             wrapperComment.setCount(allComments.size());
             wrapperComment.setResults(commentMapper.toListDto(allComments));
 
@@ -66,22 +66,18 @@ public class CommentService {
            userService.checkUserHaveRights(authentication, comment.getUser().getUsername());
        });
         commentOptional.ifPresent((commentRepository::delete));
+
     }
 
 
 
-    public CommentDto updateComments(CommentDto commentUpdateDto, Integer adPk, Integer pk, Authentication authentication) {
-        Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
-        commentOptional.ifPresent(comment -> {
+    public CommentDto updateComments(CommentDto commentDto, Integer adPk, Integer pk, Authentication authentication) {
+        Comment comment = commentRepository.findByPk(pk);
             userService.checkUserHaveRights(authentication, comment.getUser().getUsername());
-            comment.setPk(commentUpdateDto.getPk());
-            comment.setCreatedAt(commentUpdateDto.getCreatedAt());
-            comment.setText(commentUpdateDto.getText());
+            comment.setText(commentDto.getText());
             commentRepository.save(comment);
-        });
-        return commentOptional
-                .map(commentMapper::toDTO)
-                .orElse(null);
+        return commentMapper.toDTO(comment);
+
     }
 
     public CommentDto getComments_1(Integer adPk, Integer pk) {

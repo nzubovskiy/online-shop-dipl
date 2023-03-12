@@ -17,13 +17,12 @@ import com.example.onlineshopdipl.repository.CommentRepository;
 import com.example.onlineshopdipl.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class AdsService {
@@ -47,7 +46,6 @@ public class AdsService {
         this.fullAdsMapper = fullAdsMapper;
         this.imageService = imageService;
         this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -79,7 +77,6 @@ public class AdsService {
 
     }
 
-
     public FullAds getAds(Integer pk) {
         Ads ads = adsRepository.findByPk(pk);
         if (ads == null) {
@@ -98,13 +95,18 @@ public class AdsService {
     public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
         Ads ads0=adsRepository.findByPk(pk);
 
+        Ads ads0 = adsRepository.findByPk(pk);
         User user = userService.getUser(authentication.getName());
         userService.checkUserHaveRights(authentication, ads0.getUser().getUsername());
-        Ads update= createAdsMapper.toEntity(ads, user);
+        Ads update = createAdsMapper.toEntity(ads, user);
 
         ads0.setPrice(update.getPrice());
         ads0.setTitle(update.getTitle());
         ads0.setDescription(update.getDescription());
+
+        Ads ads1 = adsRepository.save(ads0);
+        return adsMapper.toDTO(ads1);
+    }
 
         Ads ads1=adsRepository.save(ads0);
         return adsMapper.toDTO(ads1);

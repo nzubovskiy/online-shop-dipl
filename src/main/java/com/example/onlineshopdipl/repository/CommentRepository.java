@@ -10,9 +10,9 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    List<Comment> findAllByPk(Integer adPk);
+    Comment findByPk(Integer pk);
 
-    Comment findCommentsByAds_Pk(Integer pk);
+    List<Comment> findCommentsByAds_Pk(Integer adPk);
 
     Optional<Comment> findByPkAndPk(Integer adPk, Integer pk);
     //Comment findByPkAndPk(Integer adPk, Integer pk);

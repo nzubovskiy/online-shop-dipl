@@ -175,7 +175,7 @@ public class AdsController {
     @PatchMapping("/{id})")
     public ResponseEntity<AdsDto> updateAds(
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id,
-             @RequestBody CreateAds ads,
+            @RequestBody CreateAds ads,
             Authentication authentication)
     {
         AdsDto adsDto = adsService.updateAds(authentication, id, ads);
@@ -202,7 +202,9 @@ public class AdsController {
             @Parameter(name = "id", required = true) @PathVariable("id") Integer id
     ) {
         CommentDto commentDto = commentService.getComments_1(adPk, id);
-
+        if (commentDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(commentDto);
     }
 
