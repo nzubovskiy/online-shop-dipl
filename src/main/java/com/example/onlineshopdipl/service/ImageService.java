@@ -74,7 +74,6 @@ public class ImageService {
         } catch (IOException e) {
             throw new RuntimeException("С загружаемым файлом возникла проблема. Загрузите другой файл.");
         }
-        image.setId(Integer.valueOf(UUID.randomUUID().toString()));
         image.setImage(imageBytes);
     }
 

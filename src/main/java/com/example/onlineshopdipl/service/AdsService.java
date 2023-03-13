@@ -62,7 +62,7 @@ public class AdsService {
     public AdsDto createAds(Authentication authentication, CreateAds createAds, MultipartFile image) {
         User user = userService.getUser(authentication.getName());
 
-        Ads ads = createAdsMapper.toEntity(createAds, user);
+        Ads ads = createAdsMapper.toEntity(createAds);
         ads.setUser(user);
 
         Ads savedAds = adsRepository.save(ads);
@@ -73,8 +73,6 @@ public class AdsService {
         savedAds.setImages(imageList);
 
         return adsMapper.toDTO(savedAds);
-
-
     }
 
     public FullAds getAds(Integer pk) {
@@ -95,9 +93,9 @@ public class AdsService {
     public AdsDto updateAds(Authentication authentication, Integer pk, CreateAds ads) {
 
         Ads ads0 = adsRepository.findByPk(pk);
-        User user = userService.getUser(authentication.getName());
+       // User user = userService.getUser(authentication.getName());
         userService.checkUserHaveRights(authentication, ads0.getUser().getUsername());
-        Ads update = createAdsMapper.toEntity(ads, user);
+        Ads update = createAdsMapper.toEntity(ads);
 
         ads0.setPrice(update.getPrice());
         ads0.setTitle(update.getTitle());

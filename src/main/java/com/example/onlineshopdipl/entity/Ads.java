@@ -1,10 +1,9 @@
 package com.example.onlineshopdipl.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 
 @Data
@@ -22,10 +21,10 @@ public class Ads {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "ads")
-    private List<Image> images;
+    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
-    @OneToMany(mappedBy = "ads")
-    private Set<Comment> comments;
+    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL)
+    private List<Image> images;
 
 }
