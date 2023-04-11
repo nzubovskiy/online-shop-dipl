@@ -28,6 +28,13 @@ public class AuthServiceImpl implements AuthService {
         this.encoder = new BCryptPasswordEncoder();
     }
 
+    /**
+     * Check if user can log in
+     *
+     * @param userName username from a client
+     * @param password password from a client
+     * @return boolean result of login
+     */
     @Override
     public boolean login(String userName, String password) {
         if (!manager.userExists(userName)) {
@@ -38,6 +45,15 @@ public class AuthServiceImpl implements AuthService {
         String encryptedPasswordWithoutEncryptionType = encryptedPassword.substring(8);
         return encoder.matches(password, encryptedPasswordWithoutEncryptionType);
     }
+
+
+    /**
+     * New user registration
+     *
+     * @param registerReq new user credentials from a client
+     * @param role user role
+     * @return boolean result of registration
+     */
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {

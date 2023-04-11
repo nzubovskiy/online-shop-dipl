@@ -26,7 +26,7 @@ public class User {
     private String image;
     @Enumerated(EnumType.STRING)
     private Role role;
-    private String username; //поменяла login на username
+    private String username; 
     private String password;
     private Boolean enabled;
 

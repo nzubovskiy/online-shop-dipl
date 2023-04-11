@@ -2,10 +2,12 @@ package com.example.onlineshopdipl.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class AdsDto {
     private Integer author;
-    private String image;
+    private List<String> image;
     private Integer pk;
     private Integer price;
     private String title;

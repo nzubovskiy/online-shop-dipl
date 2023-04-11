@@ -2,13 +2,15 @@ package com.example.onlineshopdipl.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class FullAds {
     private String authorFirstName;
     private String authorLastName;
     private String description;
     private String email;
-    private String image;
+    private List<String> image;
     private String phone;
     private Integer pk;
     private Integer price;

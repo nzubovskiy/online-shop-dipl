@@ -23,17 +23,23 @@ public class CommentService {
     private final AdsRepository adsRepository;
     private final CommentMapper commentMapper;
     private final UserService userService;
-    private final UserRepository userRepository;
 
 
-
-    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService, UserRepository userRepository) {
+    public CommentService(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserService userService) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
         this.commentMapper = commentMapper;
         this.userService = userService;
-        this.userRepository = userRepository;
     }
+
+    /**
+     * Creating of new comment.
+     *
+     * @param pk identification number of an ad
+     * @param commentDto {@link CommentDto} from a client
+     * @param authentication {@link Authentication} instance from controller
+     * @return {@link CommentDto} instance of created {@link Comment}
+     */
 
     public CommentDto addComments(CommentDto commentDto, Integer pk, Authentication authentication) {
         Ads ads = adsRepository.findByPk(pk);
@@ -49,6 +55,12 @@ public class CommentService {
         return commentMapper.toDTO(newComment);
     }
 
+    /**
+     * Receive all comments for Ads by Ads id.
+     *
+     * @param adPk identification number of an ad
+     * @return {@link ResponseWrapperComment} instance with number of founded comments and List of {@link CommentDto}
+     */
     public ResponseWrapperComment getAllCommentsByAd(Integer adPk) {
         Ads ads = adsRepository.findByPk(adPk);
         List<Comment> allComments = commentRepository.findCommentsByAds_Pk(adPk);
@@ -60,6 +72,14 @@ public class CommentService {
         return wrapperComment;
     }
 
+    /**
+     * Delete comment from DB by id.
+     * The repository method {@link CommentRepository#delete(Object)} is used.
+     *
+     * @param adPk identification number of an ad
+     * @param pk identification number of a comment
+     * @param authentication {@link Authentication} instance from controller
+     */
     public void deleteComment(Authentication authentication, Integer adPk, Integer pk) {
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);
          commentOptional.ifPresent(comment -> {
@@ -69,6 +89,15 @@ public class CommentService {
 
     }
 
+    /**
+     * Receive comment by comment id with checking by ads id in DB, then update comment.
+     *
+     * @param adPk identification number of an ad
+     * @param pk identification number of a comment
+     * @param commentDto {@link CommentDto} from a client
+     * @param authentication {@link Authentication} instance from controller
+     * @return comment update
+     */
     public CommentDto updateComments(CommentDto commentDto, Integer adPk, Integer pk, Authentication authentication) {
         Comment comment = commentRepository.findByPk(pk);
             userService.checkUserHaveRights(authentication, comment.getUser().getUsername());
@@ -77,6 +106,14 @@ public class CommentService {
         return commentMapper.toDTO(comment);
 
     }
+
+    /**
+     * Get comment by Ads id and comment id.
+     *
+     * @param adPk identification number of an ad
+     * @param pk identification number of a comment
+     * @return {@link CommentDto} instance
+     */
 
     public CommentDto getComments_1(Integer adPk, Integer pk) {
         Optional<Comment> commentOptional = commentRepository.findByPkAndPk(adPk, pk);

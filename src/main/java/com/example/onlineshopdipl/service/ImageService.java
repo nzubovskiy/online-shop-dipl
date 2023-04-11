@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -30,6 +29,13 @@ public class ImageService {
         this.userService = userService;
     }
 
+    /**
+     * Create new image for ads.
+     *
+     * @param image {@link MultipartFile} with an image
+     * @param ads {@link Ads} instance
+     * @return image created
+     */
     public Image saveImage(MultipartFile image, Ads ads){
         Image image1= new Image();
         extractInfo(image, image1);
@@ -37,6 +43,12 @@ public class ImageService {
         return imageRepository.save(image1);
     }
 
+    /**
+     * Get image for ads by image id.
+     *
+     * @param id identification number of an image
+     * @return byte array
+     */
     public byte[] getImage(Integer id){
         byte[] image= imageRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND))
@@ -44,6 +56,15 @@ public class ImageService {
     return new ByteArrayResource(image).getByteArray();
     }
 
+    /**
+     * Receive old image by id, update and save.
+     *
+     * @param id             identification number of an image
+     * @param image           {@link MultipartFile} with an image
+     * @param authentication {@link Authentication} instance from controller
+     * @return byte array
+     * @throws ImageNotFoundException if no image was found
+     */
     public byte[] updateAdsImage(Integer id, MultipartFile image, Authentication authentication)  {
         Image presentImage = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
         userService.checkUserHaveRights(authentication, presentImage.getAds().getUser().getUsername());

@@ -28,23 +28,14 @@ public class UserController {
 
     private final UserService userService;
 
-    private final ImageService imageService;
-
-    public UserController(UserService userService, ImageService imageService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.imageService = imageService;
     }
 
     @Operation(
             tags = "Пользователи",
             summary = "setPassword",
-            operationId = "setPassword"//,
-            //requestBody = @RequestBody(
-             //       required = true,
-                    //content = @Content(
-                         //   mediaType = MediaType.APPLICATION_JSON_VALUE,
-                         //   schema = @Schema(implementation = NewPassword.class))
-            ,//)
+            operationId = "setPassword",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
                         @Content(mediaType = "*/*", schema = @Schema(implementation = NewPassword.class))),
@@ -86,12 +77,6 @@ public class UserController {
             tags = "Пользователи",
             summary = "updateUser",
             operationId = "updateUser",
-           // requestBody = @RequestBody(
-             //       required = true,
-                    //content = @Content(
-                     //       mediaType = MediaType.APPLICATION_JSON_VALUE,
-                     //       schema = @Schema(implementation = UserDto.class))
-            //),
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content =
                         @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))),
@@ -138,7 +123,7 @@ public class UserController {
                     responseCode = "200"),
                     @ApiResponse(responseCode = "404", content = @Content)
             })
-    @GetMapping(value = "/avater/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/avatar/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getUserImage(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getUserImage(id));
     }
